@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
+    <link rel="icon" th:href="@{/resources/img/favicon.ico}" href="../../resources/img/favicon.ico">
 
     <title th:text="${data.title}">Title</title>
 
@@ -22,10 +22,11 @@
 <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
-            <h3 class="masthead-brand">Абажур</h3>
+            <h3 class="masthead-brand" th:text="${data.name}">Абажур</h3>
             <nav class="nav nav-masthead justify-content-center">
-                <a class="nav-link active" href="#">Статистика</a>
-                <a class="nav-link" href="#">Фотки</a>
+                <a class="nav-link active" th:href="@{/}" href="#">Статистика</a>
+                <a class="nav-link" th:href="@{/gallery.html}" href="#">Фотки</a>
+                <a class="nav-link" th:href="@{/chat.html}" href="#">Чатик</a>
             </nav>
         </div>
     </header>
@@ -61,7 +62,7 @@
             </table>
         </div>
         <div class="row">
-            <canvas id="chart-1" class="chart" width="400" height="400"></canvas>
+            <canvas id="chart-1" class="chart"></canvas>
         </div>
 
         <!--<p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>-->

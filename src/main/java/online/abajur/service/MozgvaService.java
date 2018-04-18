@@ -37,6 +37,7 @@ public class MozgvaService {
             Document document = Jsoup.connect("http://mozgva.com/teams/" + teamId).get();
             logger.info(document.title());
             data.setTitle(document.title());
+            data.setName(document.title().replace(" - Это Мозгва, детка!", ""));
             // clear duplicates
             document.selectFirst(".contentWrap.mobile").empty();
             Element members = document.selectFirst(".faceCarousel");
