@@ -182,3 +182,54 @@ body {
 .baguetteBox-button {
     background-color: transparent !important;
 }
+
+.chat-input {
+    height: auto;
+}
+
+.chat-send-button {
+  display: inline-block;
+  height: 32px;
+  width: 32px;
+}
+
+.chat-window-viewport{
+  max-width:730px;
+}
+
+.oy-auto{
+  overflow-y: auto;
+}
+
+.bubble {
+  border-radius: 5px;
+  color: #212529;
+  background: #fff;
+  text-align: left;
+  max-width: 90%;
+  position: relative;
+  float: left;
+  min-width: 200px;
+}
+
+.bubble.my {
+  background: #d9fff0;
+  float: right;
+}
+
+.bubble > .message-time {
+  text-align: right;
+  font-size: small;
+  float: right;
+}
+
+.bubble > .message-author {
+  color: maroon;
+  padding-bottom: 0px !important;
+}
+
+main > form {
+  max-width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -12,14 +12,20 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-
     <!-- Custom styles for this template -->
     <link th:href="@{resources/css/main.css}" href="../../resources/css/main.css" rel="stylesheet">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var SETTINGS = {};
+        SETTINGS.contextPath = [[@{/}]];
+        SETTINGS.currentUser=[[${userId != null ? userId : ''}]];
+        /*]]>*/
+    </script>
 </head>
 
 <body class="text-center">
 
-<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
             <h3 class="masthead-brand">Абажур</h3>
@@ -30,16 +36,63 @@
             </nav>
         </div>
     </header>
-    <main role="main" class="inner cover">
+    <main role="main" class="inner cover oy-auto"> <!--h-100-->
+        <form th:if="${userId == null}" th:action="@{/chat.html}" action="#" method="POST">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="invite" placeholder="Введите код">
+            </div>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="name" placeholder="Введите имя">
+            </div>
+            <div class="btn-group mb-3">
+                <button class="btn btn-primary" type="submit">OK</button>
+            </div>
+            <input type="hidden" name="csrf" th:value="${csrf}" value=""/>
+        </form>
+        <div th:if="${userId != null}" class="chat-window-viewport h-100">
+            <div id="chat-history" class="h-100 d-flex flex-column">
+                <div class="mt-auto"/>
+
+                    <!--div class="bubble">
+                        <div class="message-author p-1">Roman</div>
+                        <div class="message-time p-1">12:33</div><div class="p-1">Flex item 1 dfgvfdg fegdfgfdg fdgfdgfdgfd gfdg fgd gfdfgdfg fgdfgfdg dfgfgfg </div>
+                        <div class="message-time p-1">12:33</div><div class="p-1">Flex item 2 gfd fdgfd g dfg</div>
+                        <div class="message-time p-1">12:33</div><div class="p-1">Flex item 3</div>
+                    </div>
+
+                </div>
+                <div class="p-1">
+                    <div class="bubble my">
+                        <div class="message-author p-1">grigory</div>
+                        <div class="message-time p-1">12:33</div><div class="p-1">item fg fgdfgf dfg dfgdfgfg dfgfdg 4</div>
+                        <div class="message-time p-1">12:33</div><div class="p-1">item 5</div>
+                        <div class="message-time p-1">12:33</div><div class="p-1 ">item 6</div>
+                    </div>
+                </div-->
+            </div>
+        </div>
+
     </main>
+    <footer class="mt-auto">
+        <div class="inner">
+            <div th:if="${userId != null}" class="chat-input w-100">
+                <textarea class="w-100 form-control" placeholder="Ваше сообщение" cols="15" rows="2" id="message"></textarea>
+            </div>
+        </div>
+        <p th:text="${userName}" th:attr="data-user-id=${userId}">Welcome!</p>
+    </footer>
 </div>
 
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script th:src="@{resources/js/jquery-3.3.1.min.js}" src="../../resources/js/jquery-3.3.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<script th:src="@{resources/js/chat.min.js}" src="../../resources/js/chat.min.js"></script>
+<script th:if="${userId != null}" th:src="@{resources/js/sockjs-1.1.1.min.js}" src="../../resources/js/sockjs-1.1.1.min.js"></script>
+<script th:if="${userId != null}" th:src="@{resources/js/stomp.min.js}" src="../../resources/js/stomp.min.js"></script>
+<script th:if="${userId != null}" th:src="@{resources/js/twemoji.min.js}" src="../../resources/js/twemoji.min.js"></script>
+<script th:if="${userId != null}" th:src="@{resources/js/chat.js}" src="../../resources/js/chat.js"></script>
+
 </body>
 </html>

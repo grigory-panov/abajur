@@ -14,7 +14,7 @@
 			<level>DEBUG</level>
 		</filter>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOGS_PATH}/abajur.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+			<fileNamePattern>${catalina.base}/logs/abajur.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
 		</rollingPolicy>
 		<encoder>
 			<pattern>
