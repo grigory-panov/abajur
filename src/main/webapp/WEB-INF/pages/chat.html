@@ -79,7 +79,6 @@
                 <textarea class="w-100 form-control" placeholder="Ваше сообщение" cols="15" rows="2" id="message"></textarea>
             </div>
         </div>
-        <p th:text="${userName}" th:attr="data-user-id=${userId}">Welcome!</p>
     </footer>
 </div>
 
@@ -88,7 +87,7 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script th:src="@{resources/js/jquery-3.3.1.min.js}" src="../../resources/js/jquery-3.3.1.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
 <script th:if="${userId != null}" th:src="@{resources/js/sockjs-1.1.1.min.js}" src="../../resources/js/sockjs-1.1.1.min.js"></script>
 <script th:if="${userId != null}" th:src="@{resources/js/stomp.min.js}" src="../../resources/js/stomp.min.js"></script>
 <script th:if="${userId != null}" th:src="@{resources/js/twemoji.min.js}" src="../../resources/js/twemoji.min.js"></script>

@@ -20,7 +20,7 @@ if (window.jQuery) {
 
         function connectSocket() {
 
-            socket = new SockJS(SETTINGS.contextPath + "chat", {}, {transports: ["websocket"]});
+            socket = new SockJS(SETTINGS.contextPath + "websocket", {}, {transports: ["websocket"]});
             stompClient = Stomp.over(socket);
             stompClient.connect({},
                     connectedCallback,
@@ -68,7 +68,7 @@ if (window.jQuery) {
             data.limit = limit;
             data.offset = offset;
             $.ajax({
-                url: SETTINGS.contextPath + "chat/history",
+                url: SETTINGS.contextPath + "history",
                 async: true,
                 method: "GET",
                 dataType: "json",
@@ -89,7 +89,7 @@ if (window.jQuery) {
                         addMoreHistoryLink(dummy, initialHistoryMessageLoadCount, historyOffset);
                     }
                     for (var i = 0; i < response.length; i++) {
-                        addMessage(dummy, response[i].author, response[i].authorName, response[i].text, response[i].type, response[i].fileId, response[i].id);
+                        addMessage(dummy, response[i].author, response[i].authorName, response[i].text, response[i].type, response[i].fileId, response[i].id, response[i].date*1000);
                     }
                     messageArea.prepend(dummy.children());
                     if (areaCleared) {
@@ -116,28 +116,42 @@ if (window.jQuery) {
 
         function createBubble(author, authorName) {
             var bubble = $("<div/>").addClass("bubble p-1").attr("data-author", author);
+            if(author == SETTINGS.currentUser){
+                bubble.addClass("my");
+            }
             var title = $("<div/>").addClass("message-author p-1").text(authorName);
             bubble.append(title);
             return bubble;
-
         }
 
-        function addFile(messageArea, author, authorName, fullText, type, fileId, id) {
-             var link = $("<a/>").attr("href", SETTINGS.contextPath + "attachment/" + currentChat + "/" + currentMessage.fileId).text(currentMessage.text);
+        function addFile(messageArea, author, authorName, fullText, type, fileId, id, date) {
+             var link = $("<a/>").attr("href", SETTINGS.contextPath + "attachment/" + fileId).text(fullText);
              var p = $('<div/>').addClass("p-1").attr('data-id', id);
              p.append(link);
              preloadImage(link, false);
+             var dateDiv = $("<div/>").addClass("message-time p-1").text(dateToString(date));
              var newBubble = createBubble(author, authorName);
-             newBubble.append(date);
+             newBubble.append(dateDiv);
              newBubble.append(p);
              messageArea.append($("<div class='p-1'>").append(newBubble));
         }
 
-        function addMessage(messageArea, author, authorName, fullText, type, fileId, id) {
+        function dateToString(date){
+             var dateMessage = new Date(date);
+             var now = new Date();
+             if(now.getYear() === dateMessage.getYear()
+                 && now.getMonth() === dateMessage.getMonth()
+                 && now.getDay() === dateMessage.getDay()){
+                 return dateMessage.toLocaleTimeString();
+             }
+             return dateMessage.toLocaleDateString();
+        }
+
+        function addMessage(messageArea, author, authorName, fullText, type, fileId, id, date) {
             var atBottom = isViewScrolledToBottom();
 
             if(type === "file"){
-                addFile(messageArea, author, authorName, fullText, fileId, id);
+                addFile(messageArea, author, authorName, fullText, fileId, id, date);
             }else{
 
                 fullText.split('\n').forEach(function (text) {
@@ -145,17 +159,17 @@ if (window.jQuery) {
                     if(type === "edit"){
                         p.addClass("edited_message");
                     }
-                    //twemoji.parse(p[0]);
+                    twemoji.parse(p[0]);
 
-                    var date = $("<div/>").addClass("message-time p-1").text(new Date().toLocaleTimeString());
+                    var dateDiv = $("<div/>").addClass("message-time p-1").text(dateToString(date));
                     var lastBubble = messageArea.find('.bubble').last();
                     var previousAuthor = lastBubble.attr('data-author');
                     if (lastBubble.length > 0 && author === previousAuthor) {
-                        lastBubble.append(date);
+                        lastBubble.append(dateDiv);
                         lastBubble.append(p);
                     } else {
                         var newBubble = createBubble(author, authorName);
-                        newBubble.append(date);
+                        newBubble.append(dateDiv);
                         newBubble.append(p);
                         messageArea.append($("<div class='p-1'>").append(newBubble));
                     }
@@ -234,19 +248,19 @@ if (window.jQuery) {
                         changeMessage(message.headers['msg-id'], message.headers['user-id'], message.body);
                     } else {
                         addMessage(messageArea, message.headers['user-id'], message.headers['user-name'], message.body,
-                                message.headers.type, message.headers['file-id'], message.headers['msg-id']);
+                                message.headers.type, message.headers['file-id'], message.headers['msg-id'], new Date().getTime());
                     }
                 }
             });
         }
 
         function scrollViewToBottom() {
-            var view = $('.chat-window-viewport');
+            var view = $('main');
             view.scrollTop(view.prop("scrollHeight"));
         }
 
         function isViewScrolledToBottom() {
-            var view = $('.chat-window-viewport');
+            var view = $('main');
             return view.scrollTop() + view.innerHeight() >= view.prop("scrollHeight");
         }
 
@@ -268,8 +282,8 @@ if (window.jQuery) {
             newText.split('\n').forEach(function (text) {
                 var p = $('<div/>').text(text);
                 p.attr('data-id', id);
-                p.addClass('edited_message');
-                //twemoji.parse(p[0]);
+                p.addClass('edited_message p-1');
+                twemoji.parse(p[0]);
                 if (old !== null) {
                     p.insertAfter(old);
                 } else {

@@ -1,16 +1,19 @@
 package online.abajur.controller;
 
 import online.abajur.domain.AbajurUser;
+import online.abajur.domain.ChatHistory;
 import online.abajur.service.ChatService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
@@ -71,5 +74,22 @@ public class ChatController {
             }
         }
         return "chat";
+    }
+
+
+    @RequestMapping(value = "/history", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ChatHistory getHistory(@RequestParam(name = "limit") int limit,
+                                  @RequestParam(name = "offset") int offset,
+                                  HttpServletRequest request){
+        Cookie token = WebUtils.getCookie(request, "abajur_user");
+
+        if (token != null) {
+            AbajurUser user = chatService.getUser(token.getValue());
+            if (user != null) {
+                return chatService.getHistory(limit, offset);
+            }
+        }
+        return null;
     }
 }

@@ -23,8 +23,9 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
 
-        stompEndpointRegistry.addEndpoint("/chat")
+        stompEndpointRegistry.addEndpoint("/websocket")
                 .addInterceptors(handshakeInterceptor())
+                .setAllowedOrigins("http://abajur.online",  "http://www.abajur.online")
                 .withSockJS()
                 .setWebSocketEnabled(true);
     }

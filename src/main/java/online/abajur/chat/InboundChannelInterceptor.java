@@ -1,14 +1,19 @@
 package online.abajur.chat;
 
 import online.abajur.domain.AbajurUser;
+import online.abajur.domain.ChatMessage;
 import online.abajur.service.ChatService;
 import online.abajur.service.ImageService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.GenericMessage;
+
+import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 
 public class InboundChannelInterceptor extends ChannelInterceptorAdapter {
 
@@ -61,7 +66,23 @@ public class InboundChannelInterceptor extends ChannelInterceptorAdapter {
             sha.removeHeader("user-name");
             sha.addNativeHeader("user-id", user.getUid());
             sha.addNativeHeader("user-name", user.getName());
-            //todo - save message
+            ChatMessage chatMessage = new ChatMessage();
+            if("true".equalsIgnoreCase(sha.getFirstNativeHeader("edit")) &&
+                    StringUtils.isNumeric(sha.getFirstNativeHeader("msg-id"))){
+                chatMessage = chatService.getMessageByIdAndUserId(Long.valueOf(sha.getFirstNativeHeader("msg-id")), user.getUid());
+                if(chatMessage != null){
+                    chatMessage.setText(new String((byte[])message.getPayload(), StandardCharsets.UTF_8));
+                    chatMessage.setType("edit");
+                    chatService.saveMessage(chatMessage);
+                }
+            }else{
+                chatMessage.setText(new String((byte[])message.getPayload(), StandardCharsets.UTF_8));
+                chatMessage.setAuthor(user.getUid());
+                chatMessage.setAuthorName(user.getName());
+                chatMessage.setDate(ZonedDateTime.now());
+                chatService.saveMessage(chatMessage);
+                sha.setNativeHeader("msg-id", String.valueOf(chatMessage.getId()));
+            }
             return new GenericMessage<>(message.getPayload(), sha.getMessageHeaders());
         }
         return null;

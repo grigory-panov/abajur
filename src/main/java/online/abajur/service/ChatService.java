@@ -1,6 +1,8 @@
 package online.abajur.service;
 
 import online.abajur.domain.AbajurUser;
+import online.abajur.domain.ChatHistory;
+import online.abajur.domain.ChatMessage;
 import online.abajur.repository.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,5 +34,21 @@ public class ChatService {
     }
     public AbajurUser getUserById(String uid) {
         return chatRepository.getUserById(uid);
+    }
+
+    public ChatHistory getHistory(int limit, int offset) {
+        return chatRepository.getHistory(limit, offset);
+    }
+
+    public void saveMessage(ChatMessage chatMessage){
+        chatRepository.saveMessage(chatMessage);
+    }
+
+    public ChatMessage getMessageByIdAndUserId(Long id, String userId) {
+        ChatMessage cm =  chatRepository.getMessageById(id);
+        if(cm!= null && cm.getAuthor().equals(userId)){
+            return cm;
+        }
+        return null;
     }
 }
