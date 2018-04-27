@@ -23,6 +23,7 @@ public class CacheConfig extends CachingConfigurerSupport {
         SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
         List<Cache> caches = new ArrayList<>();
         caches.add(new ConcurrentMapCache("landing"));
+        caches.add(new ConcurrentMapCache("statistic"));
         simpleCacheManager.setCaches(caches);
         return simpleCacheManager;
     }

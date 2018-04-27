@@ -1,6 +1,8 @@
 package online.abajur.domain;
 
-public class Position {
+import java.util.Objects;
+
+public class TeamStatistic {
     private int games;
     private Integer position;
     private int points;
@@ -39,8 +41,25 @@ public class Position {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TeamStatistic that = (TeamStatistic) o;
+        return games == that.games &&
+                points == that.points &&
+                Objects.equals(position, that.position) &&
+                Objects.equals(percent, that.percent);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(games, position, points, percent);
+    }
+
+    @Override
     public String toString() {
-        return "Position{" +
+        return "TeamStatistic{" +
                 "games=" + games +
                 ", position=" + position +
                 ", points=" + points +

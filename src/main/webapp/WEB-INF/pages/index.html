@@ -52,11 +52,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td th:text="${data.position.position}">58</td>
-                    <td th:text="${data.position.games}">23</td>
-                    <td th:text="${data.position.points}">624</td>
-                    <td th:text="${data.position.percent}">76.23%</td>
+                <tr th:each="position: ${data.positions}">
+                    <td th:text="${position.position}">58</td>
+                    <td th:text="${position.games}">23</td>
+                    <td th:text="${position.points}">624</td>
+                    <td th:text="${position.percent}">76.23%</td>
                 </tr>
                 </tbody>
             </table>
@@ -69,9 +69,10 @@
         <p class="lead">Следующие игры:</p>
         <div class="row">
             <div class="col-sm" th:each="next : ${data.nextGames}">
-
-                <p th:text="${next.date + ' ' + next.time}">12 января 11:00</p>
-                <p th:text="${next.location}">Some place</p>
+                <p>
+                <span th:text="${next.date + ' ' + next.time + ', '}">12 января 11:00</span>
+                <span th:text="${next.location}">Some place</span>
+                </p>
             </div>
         </div>
     </main>

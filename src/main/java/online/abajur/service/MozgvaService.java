@@ -30,6 +30,9 @@ public class MozgvaService {
     @Autowired
     private CacheManager cacheManager;
 
+    @Autowired
+    private StatisticService statisticService;
+
     @Cacheable(cacheNames = "landing")
     public LandingPageData getLandingPageData(int teamId) throws AppException{
         LandingPageData data = new LandingPageData();
@@ -51,16 +54,17 @@ public class MozgvaService {
             }
             data.setTeam(team);
             Element currentPosition = document.selectFirst("tr.current");
-            Position position = new Position();
+            TeamStatistic teamStatistic = new TeamStatistic();
             String pos = currentPosition.child(0).text();
             String points = currentPosition.child(3).text();
-            position.setPosition(StringUtils.isNumeric(pos) ? Integer.parseInt(pos) : null);
-            position.setGames(Integer.parseInt(currentPosition.child(2).text()));
-            position.setPoints(StringUtils.isNumeric(points) ? Integer.parseInt(points) : 0);
-            position.setPercent(currentPosition.child(4).text());
+            teamStatistic.setPosition(StringUtils.isNumeric(pos) ? Integer.parseInt(pos) : null);
+            teamStatistic.setGames(Integer.parseInt(currentPosition.child(2).text()));
+            teamStatistic.setPoints(StringUtils.isNumeric(points) ? Integer.parseInt(points) : 0);
+            teamStatistic.setPercent(currentPosition.child(4).text());
 
-            logger.info(position.toString());
-            data.setPosition(position);
+            logger.info(teamStatistic.toString());
+            statisticService.saveTeamStatistic(teamStatistic);
+            data.setPositions(statisticService.getTeamStatistic());
 
             Element nextGamesNode = document.selectFirst(".teamGameCarousel");
 

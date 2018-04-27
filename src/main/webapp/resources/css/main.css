@@ -51,6 +51,7 @@ body {
  */
 .masthead {
   margin-bottom: 2rem;
+  padding-bottom: 1em;
 }
 
 .masthead-brand {
@@ -119,7 +120,7 @@ body {
     width: 100%;
     width-min: 500px;
     height:500px;
-    height-min:200px;
+    height-min:500px;
 }
 
 .thumbnail {
@@ -131,7 +132,7 @@ body {
 /* gallery */
 
 .gallery {
-    padding: 40px;
+    padding: 2em;
 }
 
 /* Override bootstrap column paddings */
@@ -187,14 +188,9 @@ body {
     height: auto;
 }
 
-.chat-send-button {
-  display: inline-block;
-  height: 32px;
-  width: 32px;
-}
 
 .chat-window-viewport{
-  max-width:730px;
+  max-width: 42em;
 }
 
 .oy-auto{

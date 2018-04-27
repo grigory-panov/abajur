@@ -6,7 +6,7 @@ public class LandingPageData {
 
     private List<NextGame> nextGames;
     private List<PrevGame> prevGames;
-    private Position position;
+    private List<TeamStatistic> positions;
     private List<User> team;
     private String title;
     private String chartScript;
@@ -45,12 +45,12 @@ public class LandingPageData {
         this.prevGames = prevGames;
     }
 
-    public Position getPosition() {
-        return position;
+    public List<TeamStatistic> getPositions() {
+        return positions;
     }
 
-    public void setPosition(Position position) {
-        this.position = position;
+    public void setPositions(List<TeamStatistic> positions) {
+        this.positions = positions;
     }
 
     public List<User> getTeam() {

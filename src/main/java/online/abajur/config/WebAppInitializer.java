@@ -1,8 +1,10 @@
 package online.abajur.config;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+import javax.servlet.Filter;
 import javax.servlet.ServletRegistration;
 
 @Order(3)
@@ -29,5 +31,13 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
         registration.setInitParameter("spring.profiles.active", "default");
     }
 
-
+    @Override
+    protected Filter[] getServletFilters() {
+        Filter[] filters = new Filter[1];
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+        characterEncodingFilter.setForceEncoding(true);
+        filters[0] = characterEncodingFilter;
+        return filters;
+    }
 }

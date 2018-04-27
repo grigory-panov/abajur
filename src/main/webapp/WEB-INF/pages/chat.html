@@ -36,8 +36,11 @@
             </nav>
         </div>
     </header>
-    <main role="main" class="inner cover oy-auto"> <!--h-100-->
-        <form th:if="${userId == null}" th:action="@{/chat.html}" action="#" method="POST">
+    <main role="main" class="inner cover oy-auto h-100">
+        <div class="alert alert-info collapse" role="alert">
+            Присоединяемся к чату...
+        </div>
+        <form th:if="${userId == null}" th:action="@{/chat.html}" class="h-100" action="#" method="POST">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" name="invite" placeholder="Введите код">
             </div>
@@ -49,7 +52,7 @@
             </div>
             <input type="hidden" name="csrf" th:value="${csrf}" value=""/>
         </form>
-        <div th:if="${userId != null}" class="chat-window-viewport h-100">
+        <div th:if="${userId != null}" class="chat-window-viewport">
             <div id="chat-history" class="h-100 d-flex flex-column">
                 <div class="mt-auto"/>
 

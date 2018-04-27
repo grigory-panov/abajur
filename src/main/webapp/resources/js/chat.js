@@ -19,7 +19,7 @@ if (window.jQuery) {
         connectSocket();
 
         function connectSocket() {
-
+            $('.alert').text('Присоединяемся к чату...').removeClass('collapse');
             socket = new SockJS(SETTINGS.contextPath + "websocket", {}, {transports: ["websocket"]});
             stompClient = Stomp.over(socket);
             stompClient.connect({},
@@ -29,7 +29,7 @@ if (window.jQuery) {
 
         function createWindow() {
 
-            $("main").addClass("h-100");
+
 
             $("#message").off(".chat").on("keydown.chat", function (e) {
 
@@ -67,6 +67,7 @@ if (window.jQuery) {
             var data = {};
             data.limit = limit;
             data.offset = offset;
+            $('.alert').text('Загружаем историю...').removeClass('collapse');
             $.ajax({
                 url: SETTINGS.contextPath + "history",
                 async: true,
@@ -74,7 +75,9 @@ if (window.jQuery) {
                 dataType: "json",
                 data: data,
                 success: function (jsonResponse) {
-
+                    if(!$('chat-window-viewport').hasClass('h-100')){
+                        $("chat-window-viewport").addClass("h-100");
+                    }
                     var response = jsonResponse.history;
                     var areaCleared = historyOffset === 0;
                     if (areaCleared) {
@@ -91,6 +94,7 @@ if (window.jQuery) {
                     for (var i = 0; i < response.length; i++) {
                         addMessage(dummy, response[i].author, response[i].authorName, response[i].text, response[i].type, response[i].fileId, response[i].id, response[i].date*1000);
                     }
+                    $('.alert').addClass('collapse');
                     messageArea.prepend(dummy.children());
                     if (areaCleared) {
                         scrollViewToBottom();
@@ -98,7 +102,7 @@ if (window.jQuery) {
 
                 },
                 error: function () {
-                    messageArea.append($("<div/>").text("cannot load history"));
+                    $('.alert').text('Не удалось загрузить историю');
                 }
             });
         }
@@ -133,7 +137,7 @@ if (window.jQuery) {
              var newBubble = createBubble(author, authorName);
              newBubble.append(dateDiv);
              newBubble.append(p);
-             messageArea.append($("<div class='p-1'>").append(newBubble));
+             messageArea.append($("<div/>").addClass('p-1').append(newBubble));
         }
 
         function dateToString(date){
@@ -202,12 +206,17 @@ if (window.jQuery) {
 
         function connectedCallback() {
             stompClientConnected = true;
+            $('.alert').addClass('collapse');
             retryCount = 0;
             historyOffset = 0;
             openChat();
         }
 
         function errorCallback(message) {
+            $('.alert').text('Не удалось присоединиться к чату');
+            if(retryCount >= MAX_RETRY_COUNT){
+                $('.alert').text('Не удалось присоединиться к чату, для повторной попытки обновите страницу');
+            }
             stompClientConnected = false;
             // error handler - handle any error. Usually this is disconnect event, but can be also subscribe error
             if (message.startsWith && message.startsWith('Whoops! Lost connection to')) {
@@ -230,18 +239,15 @@ if (window.jQuery) {
             var messageArea = $("#chat-history");
 
             messageArea.empty();
-            messageArea.append($("<div/>").addClass('spinner'));
+            //messageArea.append($("<div/>").addClass('spinner'));
 
             var destination = "/topic/teamChat";
 
             loadHistory(messageArea, initialHistoryMessageLoadCount, historyOffset);
-
             stompClient.subscribe(destination, function (message) {
                 if (message.headers['action-id']) {
-                    if (message.headers['action-id'] === 'TYPE') {
-                        playTyping(message.headers['user-id']);
-                    } else if (message.headers['action-id'] === 'JOIN') {
-                        join(messageArea, message.headers['user-id'], message.body);
+                    if (message.headers['action-id'] === 'JOIN') {
+                        //join(messageArea, message.headers['user-id'], message.body);
                     }
                 } else {
                     if (message.headers.edit === 'true') {

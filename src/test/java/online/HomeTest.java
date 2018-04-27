@@ -1,8 +1,7 @@
 package online;
 import online.abajur.domain.NextGame;
-import online.abajur.domain.Position;
+import online.abajur.domain.TeamStatistic;
 import online.abajur.domain.PrevGame;
-import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,13 +22,13 @@ public class HomeTest {
             System.out.println(el.selectFirst("p.name").text() + " " +el.selectFirst(".avatar").attr("style"));
         }
         Element currentPosition = document.selectFirst("tr.current");
-        Position position = new Position();
-        position.setPosition(Integer.parseInt(currentPosition.child(0).text()));
-        position.setGames(Integer.parseInt(currentPosition.child(2).text()));
-        position.setPoints(Integer.parseInt(currentPosition.child(3).text()));
-        position.setPercent(currentPosition.child(4).text());
+        TeamStatistic teamStatistic = new TeamStatistic();
+        teamStatistic.setPosition(Integer.parseInt(currentPosition.child(0).text()));
+        teamStatistic.setGames(Integer.parseInt(currentPosition.child(2).text()));
+        teamStatistic.setPoints(Integer.parseInt(currentPosition.child(3).text()));
+        teamStatistic.setPercent(currentPosition.child(4).text());
 
-        System.out.println(position);
+        System.out.println(teamStatistic);
 
         Element nextGamesNode = document.selectFirst(".teamGameCarousel");
 
