@@ -271,3 +271,7 @@ main > form {
   float: right;
   cursor: pointer;
 }
+
+.invert{
+  color: #333;
+}

@@ -207,8 +207,8 @@ if (window.jQuery) {
         }
 
         function addFile(messageArea, author, authorName, fullText, fileId, id, date) {
-             var link = $("<a/>").addClass("lithbox").attr("href", SETTINGS.contextPath + "/storage/"+fileId+"/full");
-             var img = $("<img/>").addClass("figure-img img-fluid rounded").attr('src', SETTINGS.contextPath + "/storage/"+fileId+"/medium");
+             var link = $("<a/>").addClass("lithbox").attr("href", SETTINGS.contextPath + "storage/"+fileId+"/full");
+             var img = $("<img/>").addClass("figure-img img-fluid rounded").attr('src', SETTINGS.contextPath + "storage/"+fileId+"/medium");
              link.append(img);
              var figure = $('<figure/>').addClass('figure');
              var caption = $('<figcaption/>').addClass('figure-caption').text(fullText);
