@@ -4,6 +4,7 @@ import online.abajur.domain.AbajurUser;
 import online.abajur.domain.ChatHistory;
 import online.abajur.domain.ChatMessage;
 import online.abajur.repository.ChatRepository;
+import online.abajur.repository.SettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +17,12 @@ public class ChatService {
     @Autowired
     private ChatRepository chatRepository;
 
+    @Autowired
+    private SettingsRepository settingsRepository;
+
 
     public boolean inviteValid(String invite) {
-        return "abajur.me!".equals(invite);
+        return settingsRepository.getInviteCode().equals(invite);
     }
 
     public AbajurUser saveUser(String secretIid, String name) {
@@ -50,5 +54,9 @@ public class ChatService {
             return cm;
         }
         return null;
+    }
+
+    public ChatMessage getMessageByImageId(String uid) {
+        return chatRepository.getMessageByImageId(uid);
     }
 }

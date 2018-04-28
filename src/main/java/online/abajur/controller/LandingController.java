@@ -1,6 +1,7 @@
 package online.abajur.controller;
 
 import online.abajur.AppException;
+import online.abajur.repository.SettingsRepository;
 import online.abajur.service.MozgvaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +22,17 @@ public class LandingController {
 
     private static final Logger logger = LoggerFactory.getLogger(LandingController.class);
 
-    private static final int ABAJUR_ID = 9961;
-
     @Autowired
     private MozgvaService mozgvaService;
+
+    @Autowired
+    private SettingsRepository settingsRepository;
 
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
     public String getIndex(@RequestParam(name = "teamId", required = false) Integer teamId, Model model) throws AppException{
         if(teamId == null) {
-            model.addAttribute("data", mozgvaService.getLandingPageData(ABAJUR_ID));
+            model.addAttribute("data", mozgvaService.getLandingPageData(settingsRepository.getTeamId()));
         }else{
             model.addAttribute("data", mozgvaService.getLandingPageData(teamId));
         }

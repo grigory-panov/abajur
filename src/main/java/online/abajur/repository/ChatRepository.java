@@ -67,4 +67,8 @@ public class ChatRepository {
     public ChatMessage getMessageById(Long id) {
         return storageMessages.get(id);
     }
+
+    public ChatMessage getMessageByImageId(String uid) {
+        return storageMessages.values().stream().filter( m -> uid.equals(m.getFileId())).findFirst().orElse(null);
+    }
 }

@@ -17,6 +17,72 @@ if (window.jQuery) {
 
         createWindow();
         connectSocket();
+        $('.send-button').on('click', sendMessage);
+        $('.img-button').on('click', selectImage);
+        var inputFile = $("<input type='file'/>").change(function () {
+            if (this.files && this.files[0]) {
+                $('.progress-bar').attr('aria-valuenow', '0').width('0%').removeClass('bg-danger').text('').hide();
+                $('#uploadComment').val('');
+                $('.modal').modal('show');
+                var size = this.files[0].size || this.files[0].fileSize;
+                if (size > 10000000) { // 10MB
+                    showUploadError("Max file size : 9Mb");
+                     $('.modal').find('.btn-primary').attr('disabled', 'disabled');
+                }else{
+                    $('.modal').find('.btn-primary').removeAttr('disabled');
+                    var reader = new FileReader();
+                    var imageSrc;
+                    reader.onload = function (e) {
+                        imageSrc = e.target.result;
+                        $('.modal').find('img').attr('src', imageSrc);
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                    var formData = new FormData();
+                    formData.append("file", this.files[0]);
+
+                    $('.modal').find('.btn-primary').off('click.chat').on('click.chat', function(){
+                        if($('#toGalery').prop('checked')){
+                            formData.append('toGalery', 'on');
+                        }
+                        formData.append("text", $('#uploadComment').val());
+                        var sendFileXhr = $.ajax({
+                            xhr: function () {
+                                var xhr = new window.XMLHttpRequest();
+                                xhr.upload.addEventListener("progress", function (evt) {
+                                    $('.progress-bar').show();
+                                    if (evt.lengthComputable) {
+                                        var percentComplete = Math.ceil(evt.loaded / evt.total) * 100;
+                                        $(".progress-bar").width(percentComplete + '%').attr('aria-valuenow', percentComplete);
+                                    }
+                                }, false);
+                                return xhr;
+                            },
+                            processData: false,
+                            contentType: false,
+                            dataType: "json",
+                            cache: false,
+                            type: 'POST',
+                            url: SETTINGS.contextPath + "sendfile",
+                            data: formData,
+                            success: function (data) {
+                                if (data.result === "ERROR") {
+                                    showUploadError(data.message);
+                                } else {
+                                    $('.modal').modal('hide');
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                showUploadError(textStatus);
+                            }
+                        });
+                    });
+                }
+            }
+        });
+
+        function showUploadError(errorText){
+             $('.progress-bar').width('100%').addClass('bg-danger').attr('aria-valuenow', '100').text(errorText).show();
+        }
 
         function connectSocket() {
             $('.alert').text('Присоединяемся к чату...').removeClass('collapse');
@@ -29,9 +95,7 @@ if (window.jQuery) {
 
         function createWindow() {
 
-
-
-            $("#message").off(".chat").on("keydown.chat", function (e) {
+            $("#message").off(".chat").on("keyup.chat", function (e) {
 
                 if (e.which === 13 && !e.shiftKey) {
                     e.preventDefault();
@@ -46,19 +110,32 @@ if (window.jQuery) {
 
             });
 
+            $("#message").on('input', changeSendButtonStatus);
+
         }
 
+        function changeSendButtonStatus(){
+            if($(this).val().length == 0){
+                $('.send-button').addClass('disabled');
+            }else{
+                $('.send-button').removeClass('disabled');
+            }
+        }
+
+
+        function selectImage(){
+            $('.modal').find('img').attr('src', '');
+            inputFile.val('');
+            inputFile.click();
+        }
         function sendMessage() {
             var input = $("#message");
-            if (input.val()) {
-                if (stompClientConnected) {
-                    stompClient.send("/topic/teamChat", {
-                        'edit': input.hasClass("edit"),
-                        'msg-id': input.data('edit-id')
-                    }, input.val());
-                    input.val("");
-                }
-                // prevent sending typing message after user send message
+            if (input.val().length > 0 && stompClientConnected) {
+                stompClient.send("/topic/teamChat", {
+                    'edit': input.hasClass("edit"),
+                    'msg-id': input.data('edit-id')
+                }, input.val());
+                input.val("");
                 stopEditLastMessage();
             }
         }
@@ -96,6 +173,7 @@ if (window.jQuery) {
                     }
                     $('.alert').addClass('collapse');
                     messageArea.prepend(dummy.children());
+                    baguetteBox.run('.chat-window-viewport', {filter: /full$/});
                     if (areaCleared) {
                         scrollViewToBottom();
                     }
@@ -128,11 +206,17 @@ if (window.jQuery) {
             return bubble;
         }
 
-        function addFile(messageArea, author, authorName, fullText, type, fileId, id, date) {
-             var link = $("<a/>").attr("href", SETTINGS.contextPath + "attachment/" + fileId).text(fullText);
+        function addFile(messageArea, author, authorName, fullText, fileId, id, date) {
+             var link = $("<a/>").addClass("lithbox").attr("href", SETTINGS.contextPath + "/storage/"+fileId+"/full");
+             var img = $("<img/>").addClass("figure-img img-fluid rounded").attr('src', SETTINGS.contextPath + "/storage/"+fileId+"/medium");
+             link.append(img);
+             var figure = $('<figure/>').addClass('figure');
+             var caption = $('<figcaption/>').addClass('figure-caption').text(fullText);
+             figure.append(link);
+             figure.append(caption);
              var p = $('<div/>').addClass("p-1").attr('data-id', id);
-             p.append(link);
-             preloadImage(link, false);
+             p.append(figure);
+
              var dateDiv = $("<div/>").addClass("message-time p-1").text(dateToString(date));
              var newBubble = createBubble(author, authorName);
              newBubble.append(dateDiv);
@@ -159,23 +243,25 @@ if (window.jQuery) {
             }else{
 
                 fullText.split('\n').forEach(function (text) {
-                    var p = $('<div/>').addClass("p-1").text(text).attr('data-id', id);
-                    if(type === "edit"){
-                        p.addClass("edited_message");
-                    }
-                    twemoji.parse(p[0]);
+                    if(text.length > 0){
+                        var p = $('<div/>').addClass("p-1").text(text).attr('data-id', id);
+                        if(type === "edit"){
+                            p.addClass("edited-message");
+                        }
+                        twemoji.parse(p[0]);
 
-                    var dateDiv = $("<div/>").addClass("message-time p-1").text(dateToString(date));
-                    var lastBubble = messageArea.find('.bubble').last();
-                    var previousAuthor = lastBubble.attr('data-author');
-                    if (lastBubble.length > 0 && author === previousAuthor) {
-                        lastBubble.append(dateDiv);
-                        lastBubble.append(p);
-                    } else {
-                        var newBubble = createBubble(author, authorName);
-                        newBubble.append(dateDiv);
-                        newBubble.append(p);
-                        messageArea.append($("<div class='p-1'>").append(newBubble));
+                        var dateDiv = $("<div/>").addClass("message-time p-1").text(dateToString(date));
+                        var lastBubble = messageArea.find('.bubble').last();
+                        var previousAuthor = lastBubble.attr('data-author');
+                        if (lastBubble.length > 0 && author === previousAuthor) {
+                            lastBubble.append(dateDiv);
+                            lastBubble.append(p);
+                        } else {
+                            var newBubble = createBubble(author, authorName);
+                            newBubble.append(dateDiv);
+                            newBubble.append(p);
+                            messageArea.append($("<div class='p-1'>").append(newBubble));
+                        }
                     }
                 });
             }
@@ -184,23 +270,6 @@ if (window.jQuery) {
                 scrollViewToBottom();
             }
 
-        }
-
-        function preloadImage(link, needScrollToBottom) {
-            var img = $("<img/>").addClass("chat-image-preview").attr("alt", link.text());
-            img.one("load", function () {
-                img.attr("title", img[0].naturalWidth + 'x' + img[0].naturalHeight);
-                link.text("").append(img);
-                if (needScrollToBottom) {
-                    scrollViewToBottom();
-                }
-            }).each(function () {
-                if (this.complete && $(this).width > 0) {
-                    $(this).load();
-                }
-            });
-            img.attr("src", link.attr("href"));
-            link.attr("download", "download");
         }
 
 
@@ -237,13 +306,11 @@ if (window.jQuery) {
         function openChat() {
 
             var messageArea = $("#chat-history");
-
             messageArea.empty();
-            //messageArea.append($("<div/>").addClass('spinner'));
-
             var destination = "/topic/teamChat";
 
             loadHistory(messageArea, initialHistoryMessageLoadCount, historyOffset);
+
             stompClient.subscribe(destination, function (message) {
                 if (message.headers['action-id']) {
                     if (message.headers['action-id'] === 'JOIN') {
@@ -255,6 +322,9 @@ if (window.jQuery) {
                     } else {
                         addMessage(messageArea, message.headers['user-id'], message.headers['user-name'], message.body,
                                 message.headers.type, message.headers['file-id'], message.headers['msg-id'], new Date().getTime());
+                        if(message.headers.type == 'file'){
+                            baguetteBox.run('.chat-window-viewport', {filter: /full$/});
+                        }
                     }
                 }
             });
@@ -286,16 +356,18 @@ if (window.jQuery) {
 
             $("#chat-history").find("div[data-author='" + author + "'] > div[data-id='" + id + "']").remove();
             newText.split('\n').forEach(function (text) {
-                var p = $('<div/>').text(text);
-                p.attr('data-id', id);
-                p.addClass('edited_message p-1');
-                twemoji.parse(p[0]);
-                if (old !== null) {
-                    p.insertAfter(old);
-                } else {
-                    bubble.append(p);
+                if(text.length > 0){
+                    var p = $('<div/>').text(text);
+                    p.attr('data-id', id);
+                    p.addClass('edited-message p-1');
+                    twemoji.parse(p[0]);
+                    if (old !== null) {
+                        p.insertAfter(old);
+                    } else {
+                        bubble.append(p);
+                    }
+                    old = p;
                 }
-                old = p;
             });
         }
 

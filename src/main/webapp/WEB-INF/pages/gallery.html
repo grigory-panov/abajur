@@ -35,8 +35,8 @@
         <div class="gallery">
             <div class="row">
                 <div class="col-sm-6 col-md-4" th:each="img : ${images}">
-                    <a class="lithbox" th:href="${img.path}" href="../../resources/img/abajur.jpg">
-                        <img th:src="${img.path}" class="img-fluid" src="../../resources/img/abajur.jpg">
+                    <a class="lithbox" th:href="@{/storage/{id}/full(id=${img})}" href="../../resources/img/abajur.jpg">
+                        <img th:src="@{/storage/{id}/medium(id=${img})}" class="img-fluid" src="../../resources/img/abajur.jpg">
                     </a>
                 </div>
             </div>
@@ -59,7 +59,7 @@
     //<![CDATA[
 (function() {
        var initGallery = function() {
-            baguetteBox.run('.gallery');
+            baguetteBox.run('.gallery', {filter: /full$/});
        };
        if (typeof baguetteBox !== "undefined" && baguetteBox !== null){
             initGallery();

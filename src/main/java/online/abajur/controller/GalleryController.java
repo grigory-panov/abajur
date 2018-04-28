@@ -1,56 +1,125 @@
 package online.abajur.controller;
 
-import online.abajur.domain.ImageInfo;
+import online.abajur.domain.AbajurUser;
+import online.abajur.domain.ChatMessage;
+import online.abajur.service.ChatService;
+import online.abajur.service.ImageService;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.time.ZonedDateTime;
+import java.util.*;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Controller
 public class GalleryController {
 
     private static final Logger logger = LoggerFactory.getLogger(GalleryController.class);
+
+    @Autowired
+    private ChatService chatService;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private SimpMessagingTemplate simpTemplate;
+
     @RequestMapping(method = RequestMethod.GET, value = "/gallery.html")
-    public String getGalery(Model model, HttpServletRequest request){
+    public String getGalery(@RequestParam(name = "page", required = false) Integer page,
+                            Model model, HttpServletRequest request){
 
-        List<ImageInfo> images = new ArrayList<>();
-        ImageInfo img1 = new ImageInfo();
-        img1.setCssClass("col-sm-4");
-        img1.setPath(request.getContextPath() + "/resources/img/abajur.jpg");
-        img1.setOriginalPath(request.getContextPath() + "/resources/img/abajur.jpg");
-        ImageInfo img2 = new ImageInfo();
-        img2.setCssClass("col-sm-4");
-        img2.setPath(request.getContextPath() + "/resources/img/abajur.jpg");
-        img2.setOriginalPath(request.getContextPath() + "/resources/img/abajur.jpg");
-        ImageInfo img3 = new ImageInfo();
-        img3.setCssClass("col-sm-8");
-        img3.setPath(request.getContextPath() + "/resources/img/abajur.jpg");
-        img3.setOriginalPath(request.getContextPath() + "/resources/img/abajur.jpg");
-
-        images.add(img1);
-        images.add(img2);
-        images.add(img3);
-        model.addAttribute("images", images);
+        if(page == null || page <=0){
+            page = 1;
+        }
+        model.addAttribute("images", imageService.getGalleryImagesPage(page));
         return "gallery";
     }
 
-    @ExceptionHandler
-    public ModelAndView exception(Exception exception, WebRequest request) {
-        ModelAndView modelAndView = new ModelAndView("error");
-        Throwable rootCause = exception.getCause() != null ? exception.getCause() : exception;
-        modelAndView.addObject("errorMessage", rootCause);
-        logger.error(rootCause.toString(), exception);
-        modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        return modelAndView;
+
+    @RequestMapping(method = RequestMethod.POST, value = "/sendfile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, String> upload(@RequestParam(name = "text", required = false) String text,
+                         @RequestParam(name = "toGalery", required = false) boolean toGalery,
+                         @RequestParam(name = "file") MultipartFile formData,
+                         Model model, HttpServletRequest request){
+        Cookie token = WebUtils.getCookie(request, "abajur_user");
+
+        if (token != null) {
+            AbajurUser user = chatService.getUser(token.getValue());
+            if (user != null) {
+                String fileName = imageService.getNewFileName();
+                ZonedDateTime now = ZonedDateTime.now();
+                try {
+                    imageService.saveOriginalImage(fileName, now, formData.getBytes());
+                    imageService.scaleToMedium(fileName, now);
+
+                } catch (IOException e) {
+                    logger.error("cannot save image to file {} {}", e.getClass().getName(), e.getMessage());
+                    return Collections.singletonMap("result", "ERROR");
+                }
+                ChatMessage cm = new ChatMessage();
+                cm.setAuthor(user.getUid());
+                cm.setAuthorName(user.getName());
+                cm.setDate(now);
+                cm.setFileId(fileName);
+                cm.setText(text);
+                cm.setType("file");
+                chatService.saveMessage(cm);
+                Map<String, Object> headers = new HashMap<>();
+                headers.put("user-id", user.getUid());
+                headers.put("user-name", user.getName());
+                headers.put("type", "file");
+                headers.put("msg-id", cm.getId());
+                headers.put("file-id", fileName);
+                if(toGalery){
+                    imageService.saveToGallery(fileName);
+                }
+                simpTemplate.convertAndSend("/topic/teamChat",
+                        text != null ? text.getBytes(UTF_8): "".getBytes(UTF_8),
+                        headers);
+                return Collections.singletonMap("result", "OK");
+            }
+        }
+        return Collections.singletonMap("result", "ERROR");
     }
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/storage/{id}/{size}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseBody
+    public byte[] getImage(@PathVariable(name = "id") String uid,
+                           @PathVariable(name = "size") String size,
+                           Model model, HttpServletRequest request){
+        ChatMessage cm = chatService.getMessageByImageId(uid);
+        if(cm == null){
+            logger.error("chat message not found for file {}", uid);
+            return null;
+        }
+
+        try(InputStream stream = Files.newInputStream(imageService.getFile(uid, cm.getDate(), size))){
+            return IOUtils.toByteArray(stream);
+        }catch (Exception ex){
+            logger.error("file {} not found: {} {}", uid, ex.getClass().getName(), ex.getMessage());
+            return null;
+        }
+
+
+
+    }
+
 }

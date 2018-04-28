@@ -10,7 +10,7 @@ public class ChatMessage {
     private ZonedDateTime date;
     private String author;
     private String authorName;
-    private Long fileId;
+    private String fileId;
     private String type;
     private String text;
 
@@ -46,11 +46,11 @@ public class ChatMessage {
         this.authorName = authorName;
     }
 
-    public Long getFileId() {
+    public String getFileId() {
         return fileId;
     }
 
-    public void setFileId(Long fileId) {
+    public void setFileId(String fileId) {
         this.fileId = fileId;
     }
 

@@ -14,6 +14,7 @@
 
     <!-- Custom styles for this template -->
     <link th:href="@{resources/css/main.css}" href="../../resources/css/main.css" rel="stylesheet">
+    <link th:href="@{resources/css/baguetteBox.min.css}" href="../../resources/css/baguetteBox.min.css" rel="stylesheet">
     <script th:inline="javascript">
         /*<![CDATA[*/
         var SETTINGS = {};
@@ -76,21 +77,55 @@
         </div>
 
     </main>
-    <footer class="mt-auto">
-        <div class="inner">
-            <div th:if="${userId != null}" class="chat-input w-100">
-                <textarea class="w-100 form-control" placeholder="Ваше сообщение" cols="15" rows="2" id="message"></textarea>
+    <footer class="mt-auto mastfoot">
+        <div class="inner form-control" th:if="${userId != null}">
+            <div class="chat-input w-100">
+                <textarea class="w-100 " placeholder="Ваше сообщение" cols="15" rows="2" id="message"></textarea>
+                <i class="send-button disabled"></i>
+                <i class="img-button"></i>
             </div>
         </div>
     </footer>
 </div>
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title invert">Загрузка файла</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <figure class="figure">
+                    <img src="" class="figure-img img-fluid rounded" alt="Файл для загрузки">
+                    <figcaption class="figure-caption">
+                        <input class="form-check-input" type="checkbox" id="toGalery" value="on">
+                        <label class="form-check-label" for="toGalery">Добавить в галерею</label>
+                    </figcaption>
+                </figure>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="uploadComment" placeholder="Введите заголовок">
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Отправить</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script th:src="@{resources/js/jquery-3.3.1.min.js}" src="../../resources/js/jquery-3.3.1.min.js"></script>
-<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+<script th:src="@{resources/js/baguetteBox.min.js}" src="../../resources/js/baguetteBox.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script th:if="${userId != null}" th:src="@{resources/js/sockjs-1.1.1.min.js}" src="../../resources/js/sockjs-1.1.1.min.js"></script>
 <script th:if="${userId != null}" th:src="@{resources/js/stomp.min.js}" src="../../resources/js/stomp.min.js"></script>
 <script th:if="${userId != null}" th:src="@{resources/js/twemoji.min.js}" src="../../resources/js/twemoji.min.js"></script>
