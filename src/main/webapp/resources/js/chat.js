@@ -375,7 +375,7 @@ if (window.jQuery) {
             var input = $("#message");
             var area = $("#chat-history");
             var lastMessage = area.find("div[data-author='" + SETTINGS.currentUser + "'] > div").last();
-            if (lastMessage.length === 0 || lastMessage.hasClass('close_message')) {
+            if (lastMessage.length === 0 || lastMessage.find('figure').length > 0) {
                 return;
             }
             var lastMessId = lastMessage.data('id');
