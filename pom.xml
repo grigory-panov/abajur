@@ -22,6 +22,7 @@
         <org.thymeleaf-extra-version>3.0.2.RELEASE</org.thymeleaf-extra-version>
         <jackson.version>2.9.0</jackson.version>
         <wro4j.version>1.8.0</wro4j.version>
+        <h2.version>1.4.197</h2.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -244,6 +245,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
         </dependency>
 
         <!--connection pool-->

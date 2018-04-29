@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-@Transactional
 public class ChatService {
 
     @Autowired
@@ -35,9 +34,6 @@ public class ChatService {
 
     public AbajurUser getUser(String secretId) {
         return chatRepository.getUserBySecretId(secretId);
-    }
-    public AbajurUser getUserById(String uid) {
-        return chatRepository.getUserById(uid);
     }
 
     public ChatHistory getHistory(int limit, int offset) {

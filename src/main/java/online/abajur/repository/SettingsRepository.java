@@ -1,19 +1,27 @@
 package online.abajur.repository;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
 
 
 @Repository
 public class SettingsRepository {
 
+    private final JdbcTemplate template;
+    public SettingsRepository(DataSource ds) {
+        template = new JdbcTemplate(ds);
+    }
+
     public static final String VERSION =  "1.0.0";
 
     public String getInviteCode() {
-        return "test";
+        return template.queryForObject("select val from settings where code = ?", String.class, "INVITE");
     }
 
     public String getStorageDir() {
-        return "/opt/storage/abajur";
+        return template.queryForObject("select val from settings where code = ?", String.class, "STORAGE_DIR");
     }
 
     public int getTeamId() {
@@ -21,7 +29,7 @@ public class SettingsRepository {
     }
 
     public int getPageSize() {
-        return 50;
+        return Integer.parseInt(template.queryForObject("select val from settings where code = ?", String.class, "PAGE_SIZE"));
     }
 
 
