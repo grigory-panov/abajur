@@ -19,7 +19,7 @@ if (window.jQuery) {
         connectSocket();
         $('.send-button').on('click', sendMessage);
         $('.img-button').on('click', selectImage);
-        var inputFile = $("<input type='file'/>").change(function () {
+        var inputFile = $("<input type='file' accept='.jpg, .png, .jpeg, .gif|images/*'/>").change(function () {
             if (this.files && this.files[0]) {
                 $('.progress-bar').attr('aria-valuenow', '0').width('0%').removeClass('bg-danger').text('').hide();
                 $('#uploadComment').val('');
