@@ -52,7 +52,7 @@ public class ImageService {
         try(InputStream origStream = Files.newInputStream(full);
             OutputStream destStream = Files.newOutputStream(medium)){
             BufferedImage originalImage = ImageIO.read(origStream);
-            BufferedImage destImage = Scalr.resize(originalImage, Scalr.Method.SPEED,
+            BufferedImage destImage = Scalr.resize(originalImage, Scalr.Method.BALANCED,
                     Math.min(600, Math.min(originalImage.getWidth(), originalImage.getHeight())));
             ImageIO.write(destImage, "JPG", destStream);
 
@@ -77,5 +77,9 @@ public class ImageService {
 
     public List<String> getGalleryImagesPage(int page){
         return imageRepository.getGalleryImagesPage(page);
+    }
+
+    public int getGalleryPageCount(){
+        return imageRepository.getGalleryPageCount();
     }
 }

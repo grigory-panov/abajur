@@ -14,7 +14,7 @@
 
 
     <!-- Custom styles for this template -->
-    <link th:href="@{resources/css/main.css}" href="../../resources/css/main.css" rel="stylesheet">
+    <link th:href="@{resources/css/main.css?v={ver}(ver=${version})}" href="../../resources/css/main.css" rel="stylesheet">
 </head>
 
 <body class="text-center">
@@ -45,10 +45,10 @@
             <table class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                    <th class="text-center">Позиция</th>
-                    <th class="text-center">Сыграно игр</th>
-                    <th class="text-center">Набрано очков</th>
-                    <th class="text-center">Процент</th>
+                    <th class="text-center">Место</th>
+                    <th class="text-center">Игры</th>
+                    <th class="text-center">Баллы</th>
+                    <th class="text-center"></th>
                 </tr>
                 </thead>
                 <tbody>

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import static online.abajur.repository.SettingsRepository.VERSION;
+
 
 @Controller
 public class LandingController {
@@ -36,6 +38,7 @@ public class LandingController {
         }else{
             model.addAttribute("data", mozgvaService.getLandingPageData(teamId));
         }
+        model.addAttribute("version", VERSION);
         return "index";
     }
 

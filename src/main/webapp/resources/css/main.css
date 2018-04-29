@@ -239,6 +239,11 @@ main > form {
   border: none;
   resize: none;
   padding-right: 4em;
+
+}
+
+.inner textarea:focus {
+  outline: none !important;
 }
 
 .send-button {

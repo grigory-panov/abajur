@@ -45,4 +45,9 @@ public class ImageRepository {
         }
         return FileSystems.getDefault().getPath(settingsRepository.getStorageDir() + now.format(DateTimeFormatter.ofPattern("/yyyy/MM/")) + size, fileName);
     }
+
+    public int getGalleryPageCount() {
+        int pageSize = settingsRepository.getPageSize();
+        return storage.size() / pageSize + (storage.size() % pageSize > 0 ? 1 : 0);
+    }
 }

@@ -14,7 +14,7 @@
 
 
     <!-- Custom styles for this template -->
-    <link th:href="@{resources/css/main.css}" href="../../resources/css/main.css" rel="stylesheet">
+    <link th:href="@{resources/css/main.css?v={ver}(ver=${version})}" href="../../resources/css/main.css" rel="stylesheet">
     <link th:href="@{resources/css/baguetteBox.min.css}" href="../../resources/css/baguetteBox.min.css" rel="stylesheet">
 </head>
 
@@ -44,6 +44,25 @@
     </main>
     <footer class="mt-auto">
         <div class="inner">
+            <nav aria-label="Pages" th:if="${pageCount > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" th:href="@{/gallery.html?page={p}(p=${currentPage-1})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item" th:each="page : ${#numbers.sequence(1, pageCount)}" th:classappend="${currentPage == page ? 'disabled' : ''}">
+                        <a class="page-link" href="#" th:text="${page}" th:href="@{/gallery.html?page={p}(p=${page})}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == pageCount ? 'disabled' : ''}">
+                        <a class="page-link" href="#" th:href="@{/gallery.html?page={p}(p=${currentPage+1})}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </footer>
 </div>

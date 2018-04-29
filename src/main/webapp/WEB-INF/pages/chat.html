@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
-    <link th:href="@{resources/css/main.css}" href="../../resources/css/main.css" rel="stylesheet">
+    <link th:href="@{resources/css/main.css?v={ver}(ver=${version})}" href="../../resources/css/main.css" rel="stylesheet">
     <link th:href="@{resources/css/baguetteBox.min.css}" href="../../resources/css/baguetteBox.min.css" rel="stylesheet">
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -129,7 +129,7 @@
 <script th:if="${userId != null}" th:src="@{resources/js/sockjs-1.1.1.min.js}" src="../../resources/js/sockjs-1.1.1.min.js"></script>
 <script th:if="${userId != null}" th:src="@{resources/js/stomp.min.js}" src="../../resources/js/stomp.min.js"></script>
 <script th:if="${userId != null}" th:src="@{resources/js/twemoji.min.js}" src="../../resources/js/twemoji.min.js"></script>
-<script th:if="${userId != null}" th:src="@{resources/js/chat.js}" src="../../resources/js/chat.js"></script>
+<script th:if="${userId != null}" th:src="@{resources/js/chat.js?v={ver}(ver=${version})}" src="../../resources/js/chat.js"></script>
 
 </body>
 </html>

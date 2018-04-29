@@ -23,6 +23,8 @@ import javax.servlet.http.HttpSession;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static online.abajur.repository.SettingsRepository.VERSION;
+
 @Controller
 public class ChatController {
 
@@ -73,6 +75,7 @@ public class ChatController {
                 logger.info("cookie found {}, but user not", token.getValue());
             }
         }
+        model.addAttribute("version", VERSION);
         return "chat";
     }
 

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class SettingsRepository {
 
+    public static final String VERSION =  "1.0.0";
+
     public String getInviteCode() {
         return "test";
     }
@@ -21,4 +23,6 @@ public class SettingsRepository {
     public int getPageSize() {
         return 50;
     }
+
+
 }

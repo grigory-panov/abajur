@@ -25,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static online.abajur.repository.SettingsRepository.VERSION;
 
 @Controller
 public class GalleryController {
@@ -47,7 +48,10 @@ public class GalleryController {
         if(page == null || page <=0){
             page = 1;
         }
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageCount", imageService.getGalleryPageCount());
         model.addAttribute("images", imageService.getGalleryImagesPage(page));
+        model.addAttribute("version", VERSION);
         return "gallery";
     }
 
