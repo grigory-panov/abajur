@@ -1,8 +1,8 @@
-DROP table IF EXISTS gallery CASCADE;
-DROP table IF EXISTS abajur_user CASCADE;
-DROP table IF EXISTS chat_message CASCADE;
-DROP table IF EXISTS team_statistic CASCADE;
-DROP table IF EXISTS settings CASCADE;
+--DROP table IF EXISTS gallery CASCADE;
+--DROP table IF EXISTS abajur_user CASCADE;
+--DROP table IF EXISTS chat_message CASCADE;
+--DROP table IF EXISTS team_statistic CASCADE;
+--DROP table IF EXISTS settings CASCADE;
 
 CREATE TABLE IF NOT EXISTS gallery(
     id BIGINT PRIMARY KEY,
@@ -18,7 +18,7 @@ truncate table settings;
 
 insert into settings (code, val) values('INVITE', 'test');
 insert into settings (code, val) values('PAGE_SIZE', '50');
-insert into settings (code, val) values('STORAGE', '/opt/storage/abajur');
+insert into settings (code, val) values('STORAGE_DIR', '/opt/storage/abajur');
 
 CREATE TABLE IF NOT EXISTS team_statistic(
     games INT PRIMARY KEY,

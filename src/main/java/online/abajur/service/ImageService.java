@@ -2,21 +2,19 @@ package online.abajur.service;
 
 import online.abajur.repository.ImageRepository;
 import online.abajur.repository.SettingsRepository;
-import org.apache.commons.io.IOUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.file.FileSystems;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,13 +63,9 @@ public class ImageService {
         if(Files.notExists(path.getParent())){
             Files.createDirectories(path.getParent());
         }
-        Path full = getFile(fileName, now, "full");
-
-        try(InputStream origStream = new ByteArrayInputStream(content);
-            OutputStream destStream = Files.newOutputStream(full)){
-            BufferedImage originalImage = ImageIO.read(origStream);
-            ImageIO.write(originalImage, "JPG", destStream);
-
+        try(InputStream origStream = new ByteArrayInputStream(content)){
+            ImageIO.read(origStream); // throws IO Exception if not image
+            Files.write(path, content);
         }
     }
 
