@@ -45,24 +45,24 @@
             <table class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                    <th class="text-center">Место</th>
                     <th class="text-center">Игры</th>
+                    <th class="text-center">Место</th>
                     <th class="text-center">Баллы</th>
-                    <th class="text-center"></th>
+                    <th class="text-center">%</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="position: ${data.positions}">
-                    <td th:text="${position.position}">58</td>
                     <td th:text="${position.games}">23</td>
+                    <td th:text="${position.position}">58</td>
                     <td th:text="${position.points}">624</td>
                     <td th:text="${position.percent}">76.23%</td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div class="row">
-            <canvas id="chart-1" class="chart"></canvas>
+        <div class="row chart">
+            <canvas id="chart-1"></canvas>
         </div>
 
         <!--<p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>-->

@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class MozgvaService {
                 logger.info(ng.toString());
             }
             data.setPrevGames(prevGames);
-            data.setLastUpdate(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss").format(ZonedDateTime.now()));
+            data.setLastUpdate(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss Z").format(ZonedDateTime.now().toInstant().atZone(ZoneId.of("Europe/Moscow"))));
             return data;
 
         }catch (IOException ex){

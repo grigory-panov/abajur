@@ -118,9 +118,7 @@ body {
 
 .chart {
     width: 100%;
-    width-min: 500px;
-    height:500px;
-    height-min:500px;
+    height: 15em;
 }
 
 .thumbnail {
