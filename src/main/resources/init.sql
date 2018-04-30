@@ -1,7 +1,7 @@
 --DROP table IF EXISTS gallery CASCADE;
 --DROP table IF EXISTS abajur_user CASCADE;
 --DROP table IF EXISTS chat_message CASCADE;
-DROP table IF EXISTS team_statistic CASCADE;
+--DROP table IF EXISTS team_statistic CASCADE;
 --DROP table IF EXISTS settings CASCADE;
 
 CREATE TABLE IF NOT EXISTS gallery(
