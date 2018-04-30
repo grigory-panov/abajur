@@ -9,7 +9,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 
 @Service
@@ -23,8 +22,8 @@ public class StatisticService {
     private CacheManager cacheManager;
 
     @Cacheable
-    public List<TeamStatistic> getTeamStatistic(){
-        return statisticRepository.getTeamStatistic();
+    public List<TeamStatistic> getTeamStatistic(int teamId){
+        return statisticRepository.getTeamStatistic(teamId);
     }
 
     @CacheEvict(allEntries = true, condition = "#result == true")

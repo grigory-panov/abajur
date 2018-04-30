@@ -12,6 +12,24 @@ public class LandingPageData {
     private String chartScript;
     private String lastUpdate;
     private String name;
+    private String badgeClass;
+    private int badgeCount;
+
+    public String getBadgeClass() {
+        return badgeClass;
+    }
+
+    public void setBadgeClass(String badgeClass) {
+        this.badgeClass = badgeClass;
+    }
+
+    public int getBadgeCount() {
+        return badgeCount;
+    }
+
+    public void setBadgeCount(int badgeCount) {
+        this.badgeCount = badgeCount;
+    }
 
     public String getName() {
         return name;

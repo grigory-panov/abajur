@@ -14,7 +14,7 @@
 
 
     <!-- Custom styles for this template -->
-    <link th:href="@{resources/css/main.css?v={ver}(ver=${version})}" href="../../resources/css/main.css" rel="stylesheet">
+    <link th:href="@{/resources/css/main.css?v={ver}(ver=${version})}" href="../../resources/css/main.css" rel="stylesheet">
 </head>
 
 <body class="text-center">
@@ -22,7 +22,16 @@
 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
         <div class="inner">
-            <h3 class="masthead-brand" th:text="${data.name}">Абажур</h3>
+            <h3 class="masthead-brand">
+                <span th:text="${data.name}">Абажур</span>
+                <span class="badge" th:if="${data.badgeCount > 0}" th:classappend="${data.badgeClass}">
+                    <img th:src="@{/resources/img/{badge}.png(badge=${data.badgeClass == 'badge-light' || data.badgeClass == 'badge-warning' ? 'award' : 'award-white'})}" src="../../resources/img/avard-white.png">
+                    <span th:if="${data.badgeCount > 1}">
+                        x
+                        <span th:text="${data.badgeCount}">3</span>
+                    </span>
+                </span>
+            </h3>
             <nav class="nav nav-masthead justify-content-center">
                 <a class="nav-link active" th:href="@{/}" href="#">Статистика</a>
                 <a class="nav-link" th:href="@{/gallery.html}" href="#">Фотки</a>

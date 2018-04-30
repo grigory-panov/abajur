@@ -37,21 +37,21 @@ public class StatisticRepository {
 
     public boolean saveTeamStatistic(TeamStatistic statistic) {
         try {
-            TeamStatistic oldStat = template.queryForObject("select * from team_statistic where games = ?", StatisticRepository::mapRow, statistic.getGames());
+            TeamStatistic oldStat = template.queryForObject("select * from team_statistic where team_id = ? and games = ?", StatisticRepository::mapRow, statistic.getTeamId(), statistic.getGames());
             if (!statistic.equals(oldStat)) {
-                template.update("update team_statistic set points=?, pos=?, percent=? where games = ?",
-                        statistic.getPoints(), statistic.getPosition(), statistic.getPercent(), statistic.getGames());
+                template.update("update team_statistic set points=?, pos=?, percent=? where team_id = ? and games = ?",
+                        statistic.getPoints(), statistic.getPosition(), statistic.getPercent(), statistic.getTeamId(), statistic.getGames());
                 return true;
             }
         } catch (EmptyResultDataAccessException ex) {
-            template.update("insert into team_statistic(games, points, pos, percent) values (?, ?, ?, ?)",
-                    statistic.getGames(), statistic.getPoints(), statistic.getPosition(), statistic.getPercent());
+            template.update("insert into team_statistic(team_id, games, points, pos, percent) values (?, ?, ?, ?, ?)",
+                    statistic.getTeamId(), statistic.getGames(), statistic.getPoints(), statistic.getPosition(), statistic.getPercent());
             return true;
         }
         return false;
     }
 
-    public List<TeamStatistic> getTeamStatistic() {
-        return template.query("select * from team_statistic order by games desc LIMIT 5", StatisticRepository::mapRow);
+    public List<TeamStatistic> getTeamStatistic(int teamId) {
+        return template.query("select * from team_statistic where team_id = ? order by games desc LIMIT 5", StatisticRepository::mapRow, teamId);
     }
 }

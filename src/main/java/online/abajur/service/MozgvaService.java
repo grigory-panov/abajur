@@ -35,7 +35,7 @@ public class MozgvaService {
     private StatisticService statisticService;
 
     @Cacheable(cacheNames = "landing")
-    public LandingPageData getLandingPageData(int teamId) throws AppException{
+    public LandingPageData getLandingPageData(int teamId) throws AppException {
         LandingPageData data = new LandingPageData();
         try {
             Document document = Jsoup.connect("http://mozgva.com/teams/" + teamId).get();
@@ -62,10 +62,13 @@ public class MozgvaService {
             teamStatistic.setGames(Integer.parseInt(currentPosition.child(2).text()));
             teamStatistic.setPoints(StringUtils.isNumeric(points) ? Integer.parseInt(points) : 0);
             teamStatistic.setPercent(currentPosition.child(4).text());
+            teamStatistic.setTeamId(teamId);
 
+            data.setBadgeCount(getBageCountByPoints(teamStatistic.getPoints()));
+            data.setBadgeClass(getBageClassByPercent(teamStatistic.getPercent()));
             logger.info(teamStatistic.toString());
             statisticService.saveTeamStatistic(teamStatistic);
-            data.setPositions(statisticService.getTeamStatistic());
+            data.setPositions(statisticService.getTeamStatistic(teamId));
 
             Element nextGamesNode = document.selectFirst(".teamGameCarousel");
 
@@ -113,6 +116,49 @@ public class MozgvaService {
         }catch (NullPointerException ex){
             throw new ParsePageException("Cannot parse page from mozgva.com, check page structure, source was changed", ex);
         }
+    }
+
+    private String getBageClassByPercent(String percent) {
+        try {
+            double p = Double.parseDouble(percent.replace("%", ""));
+            if(p < 70){
+                return "badge-success";
+            }
+            if(p < 75){
+                return "badge-info";
+            }
+            if(p < 80){
+                return "badge-orange";
+            }
+            if(p < 85){
+                return "badge-light";
+            }
+            if(p <= 100){
+                return "badge-warning";
+            }
+            return "badge-success";
+        }catch (Exception ex){
+            return "badge-success";
+        }
+
+    }
+
+    private int getBageCountByPoints(int points) {
+        if(points > 1000){
+            return 4;
+        }
+        if(points > 500){
+            return 3;
+        }
+
+        if(points > 300){
+            return 2;
+        }
+        if(points >= 200){
+            return 1;
+        }
+
+        return 0;
     }
 
 

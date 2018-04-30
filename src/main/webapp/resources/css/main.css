@@ -278,3 +278,8 @@ main > form {
 .invert{
   color: #333;
 }
+
+.badge-orange{
+  color: #fff;
+  background-color: #ff6600;
+}

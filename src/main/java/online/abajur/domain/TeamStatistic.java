@@ -7,6 +7,15 @@ public class TeamStatistic {
     private Integer position;
     private int points;
     private String percent;
+    private int teamId;
+
+    public int getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(int teamId) {
+        this.teamId = teamId;
+    }
 
     public int getGames() {
         return games;
@@ -47,6 +56,7 @@ public class TeamStatistic {
         TeamStatistic that = (TeamStatistic) o;
         return games == that.games &&
                 points == that.points &&
+                teamId == that.teamId &&
                 Objects.equals(position, that.position) &&
                 Objects.equals(percent, that.percent);
     }
@@ -54,13 +64,14 @@ public class TeamStatistic {
     @Override
     public int hashCode() {
 
-        return Objects.hash(games, position, points, percent);
+        return Objects.hash(games, position, points, percent, teamId);
     }
 
     @Override
     public String toString() {
         return "TeamStatistic{" +
                 "games=" + games +
+                ", teamId=" + teamId +
                 ", position=" + position +
                 ", points=" + points +
                 ", percent='" + percent + '\'' +
