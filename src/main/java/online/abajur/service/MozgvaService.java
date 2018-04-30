@@ -105,7 +105,7 @@ public class MozgvaService {
                 logger.info(ng.toString());
             }
             data.setPrevGames(prevGames);
-            data.setLastUpdate(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss Z").format(ZonedDateTime.now().toInstant().atZone(ZoneId.of("Europe/Moscow"))));
+            data.setLastUpdate(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss ZZZ").format(ZonedDateTime.now().toInstant().atZone(ZoneId.of("Europe/Moscow"))));
             return data;
 
         }catch (IOException ex){
