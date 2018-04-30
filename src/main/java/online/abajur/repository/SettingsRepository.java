@@ -14,7 +14,7 @@ public class SettingsRepository {
         template = new JdbcTemplate(ds);
     }
 
-    public static final String VERSION =  "1.0.0";
+    public static final String VERSION =  "1.0.1";
 
     public String getInviteCode() {
         return template.queryForObject("select val from settings where code = ?", String.class, "INVITE");
