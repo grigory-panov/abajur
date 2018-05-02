@@ -168,28 +168,31 @@ public class MozgvaService {
             Document document = Jsoup.connect("http://mozgva.com/games/" + gameId + "/result").get();
             logger.info("title {}", document.title());
             Map<Integer, GameStatistic> results = new LinkedHashMap<>();
-            Element resultsTable = document.selectFirst("#games_result").selectFirst("tbody");
-            for (Element tr : resultsTable.select("tr")) { // tr
-                GameStatistic teamResult = new GameStatistic();
-                teamResult.setGameId(gameId);
-                Elements td = tr.select("td");
+            Elements resultPages = document.select(".games_result");
+            for(int page = 0; page < resultPages.size(); page++) {
+                Element resultsTable = resultPages.get(page).selectFirst("tbody");
+                for (Element tr : resultsTable.select("tr")) { // tr
+                    GameStatistic teamResult = new GameStatistic();
+                    teamResult.setGameId(gameId);
+                    Elements td = tr.select("td");
 
-                Element teamNameDiv = td.get(0).selectFirst("div.name").selectFirst("a");
-                String href = teamNameDiv.attr("href");
-                teamResult.setTeamId(Integer.parseInt(href.substring(href.lastIndexOf('/')).replace("/", "")));
-                teamResult.setTeamName(teamNameDiv.text());
-                teamResult.setTour1(NumberUtils.toInt(td.get(1).text()));
-                teamResult.setTour2(NumberUtils.toInt(td.get(2).text()));
-                teamResult.setTour3(NumberUtils.toInt(td.get(3).text()));
-                teamResult.setTour4(NumberUtils.toInt(td.get(4).text()));
-                teamResult.setTour5(NumberUtils.toInt(td.get(5).text()));
-                teamResult.setTour6(NumberUtils.toInt(td.get(6).text()));
-                teamResult.setTour7(NumberUtils.toInt(td.get(7).text()));
-                teamResult.setTotal(NumberUtils.toInt(td.get(8).text()));
-                teamResult.setPlace(NumberUtils.toInt(td.get(9).text()));
-                teamResult.setUpdateDate(ZonedDateTime.now(ZoneId.of("Europe/Moscow")));
-                logger.info(teamResult.toString());
-                results.put(teamResult.getTeamId(), teamResult);
+                    Element teamNameDiv = td.get(0).selectFirst("div.name").selectFirst("a");
+                    String href = teamNameDiv.attr("href");
+                    teamResult.setTeamId(Integer.parseInt(href.substring(href.lastIndexOf('/')).replace("/", "")));
+                    teamResult.setTeamName(teamNameDiv.text());
+                    teamResult.setTour1(NumberUtils.toInt(td.get(1).text()));
+                    teamResult.setTour2(NumberUtils.toInt(td.get(2).text()));
+                    teamResult.setTour3(NumberUtils.toInt(td.get(3).text()));
+                    teamResult.setTour4(NumberUtils.toInt(td.get(4).text()));
+                    teamResult.setTour5(NumberUtils.toInt(td.get(5).text()));
+                    teamResult.setTour6(NumberUtils.toInt(td.get(6).text()));
+                    teamResult.setTour7(NumberUtils.toInt(td.get(7).text()));
+                    teamResult.setTotal(NumberUtils.toInt(td.get(8).text()));
+                    teamResult.setPlace(NumberUtils.toInt(td.get(9).text()));
+                    teamResult.setUpdateDate(ZonedDateTime.now(ZoneId.of("Europe/Moscow")));
+                    logger.info(teamResult.toString());
+                    results.put(teamResult.getTeamId(), teamResult);
+                }
             }
             List<GameStatistic> ret = new ArrayList<>(results.values());
             statisticService.saveGameStatistic(results, gameId);
