@@ -3,6 +3,7 @@
 --DROP table IF EXISTS chat_message CASCADE;
 --DROP table IF EXISTS team_statistic CASCADE;
 --DROP table IF EXISTS settings CASCADE;
+--DROP table IF EXISTS game_statistic CASCADE;
 
 CREATE TABLE IF NOT EXISTS gallery(
     id BIGINT PRIMARY KEY,
@@ -48,5 +49,25 @@ CREATE TABLE IF NOT EXISTS chat_message(
     file_id VARCHAR(100)
 );
 
+--game_id, team_id, team_name, tour1, tour2, tour3, tour4, tour5, tour6, tour7, total, update_date
+
+CREATE TABLE IF NOT EXISTS game_statistic(
+    game_id INT not null,
+    team_id INT not null,
+    team_name VARCHAR(200),
+    PLACE INT,
+    tour1 INT,
+    tour2 INT,
+    tour3 INT,
+    tour4 INT,
+    tour5 INT,
+    tour6 INT,
+    tour7 INT,
+    total INT,
+    update_date TIMESTAMP
+);
+
+
+CREATE PRIMARY KEY IF NOT EXISTS PK_GAME_STATISTIC ON game_statistic(game_id, team_id);
 CREATE PRIMARY KEY IF NOT EXISTS PK_TEAM_STATISTIC ON team_statistic(team_id, games);
 CREATE UNIQUE INDEX IF NOT EXISTS IDX_CM_FILE_ID ON chat_message(file_id);

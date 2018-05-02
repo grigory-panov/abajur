@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" th:href="@{/resources/img/favicon.ico}" href="../../resources/img/favicon.ico">
+
+    <title>Результаты игры</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+
+    <!-- Custom styles for this template -->
+    <link th:href="@{/resources/css/main.css?v={ver}(ver=${version})}" href="../../resources/css/main.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+        <div class="inner">
+            <h3 class="masthead-brand">Абажур</h3>
+            <nav class="nav nav-masthead justify-content-center">
+                <a class="nav-link" th:href="@{/}" href="#">Статистика</a>
+                <a class="nav-link active" th:href="@{/gallery.html}" href="#">Фотки</a>
+                <a class="nav-link" th:href="@{/chat.html}" href="#">Чатик</a>
+            </nav>
+        </div>
+    </header>
+    <main role="main" class="inner cover">
+
+        <div class="row">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Команда</th>
+                    <th scope="col">1</th>
+                    <th scope="col">2</th>
+                    <th scope="col">3</th>
+                    <th scope="col">4</th>
+                    <th scope="col">5</th>
+                    <th scope="col">6</th>
+                    <th scope="col">7</th>
+                    <th scope="col">Всего</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row: ${data}">
+                    <th scope="row" th:text="${row.place}">1</th>
+                    <td th:text="${row.teamName}">Абажур</td>
+                    <td th:text="${row.tour1}">6</td>
+                    <td th:text="${row.tour2}">5</td>
+                    <td th:text="${row.tour3}">4</td>
+                    <td th:text="${row.tour4}">9</td>
+                    <td th:text="${row.tour5}">5</td>
+                    <td th:text="${row.tour6}">5</td>
+                    <td th:text="${row.tour7}">12</td>
+                    <td th:text="${row.total}">46</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+    <footer class="mt-auto">
+        <div class="inner">
+            <div class="inner">
+                <form th:action="@{/game/{gameId}(gameId=${gameId})}" method="post">
+                    <p>Последнее обновление <span th:text="${lastUpdate}">12.11.2018 12:33:22</span></p>
+                    <button class="btn btn-primary">Обновить</button>
+                </form>
+            </div>
+        </div>
+    </footer>
+</div>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script th:src="@{resources/js/jquery-3.3.1.min.js}" src="../../resources/js/jquery-3.3.1.min.js"></script>
+</body>
+</html>

@@ -5,9 +5,11 @@ import online.abajur.DownloadPageException;
 import online.abajur.ParsePageException;
 import online.abajur.domain.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,7 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MozgvaService {
@@ -91,7 +91,7 @@ public class MozgvaService {
 
             Element chart = document.selectFirst(".chartMobil");
             if(chart != null) {
-                data.setChartScript(chart.selectFirst("script").html());
+                data.setChartScript(chart.selectFirst("script").html().replace("options: {", "options: {onClick: showGameResults, "));
             }
 
             Element chartLinks = document.selectFirst(".result_links.hiddenDesc");
@@ -162,7 +162,51 @@ public class MozgvaService {
     }
 
 
+    @Cacheable(cacheNames = "games")
+    public Collection<GameStatistic> getGameStatistic(int gameId) throws AppException {
+        try {
+            Document document = Jsoup.connect("http://mozgva.com/games/" + gameId + "/result").get();
+            logger.info("title {}", document.title());
+            Map<Integer, GameStatistic> results = new LinkedHashMap<>();
+            Element resultsTable = document.selectFirst("#games_result").selectFirst("tbody");
+            for (Element tr : resultsTable.select("tr")) { // tr
+                GameStatistic teamResult = new GameStatistic();
+                teamResult.setGameId(gameId);
+                Elements td = tr.select("td");
+
+                Element teamNameDiv = td.get(0).selectFirst("div.name").selectFirst("a");
+                String href = teamNameDiv.attr("href");
+                teamResult.setTeamId(Integer.parseInt(href.substring(href.lastIndexOf('/')).replace("/", "")));
+                teamResult.setTeamName(teamNameDiv.text());
+                teamResult.setTour1(NumberUtils.toInt(td.get(1).text()));
+                teamResult.setTour2(NumberUtils.toInt(td.get(2).text()));
+                teamResult.setTour3(NumberUtils.toInt(td.get(3).text()));
+                teamResult.setTour4(NumberUtils.toInt(td.get(4).text()));
+                teamResult.setTour5(NumberUtils.toInt(td.get(5).text()));
+                teamResult.setTour6(NumberUtils.toInt(td.get(6).text()));
+                teamResult.setTour7(NumberUtils.toInt(td.get(7).text()));
+                teamResult.setTotal(NumberUtils.toInt(td.get(8).text()));
+                teamResult.setPlace(NumberUtils.toInt(td.get(9).text()));
+                teamResult.setUpdateDate(ZonedDateTime.now(ZoneId.of("Europe/Moscow")));
+                logger.info(teamResult.toString());
+                results.put(teamResult.getTeamId(), teamResult);
+            }
+            List<GameStatistic> ret = new ArrayList<>(results.values());
+            statisticService.saveGameStatistic(results, gameId);
+            return ret;
+        }catch (IOException ex){
+            throw new DownloadPageException("Cannot load page from mozgva.com", ex);
+        }catch (NullPointerException ex){
+            throw new ParsePageException("Cannot parse page " + "http://mozgva.com/games/" + gameId + "/result" +"from mozgva.com, check page structure, source was changed", ex);
+        }
+    }
+
     public void clearCache() {
         cacheManager.getCache("landing").clear();
     }
+
+    public void clearGamesCache() {
+        cacheManager.getCache("games").clear();
+    }
+
 }

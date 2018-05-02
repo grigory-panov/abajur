@@ -12,7 +12,6 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +31,7 @@ public class ChatRepository {
         message.setId(resultSet.getLong("id"));
         message.setType(resultSet.getString("type"));
         message.setText(resultSet.getString("text"));
-        message.setDate(resultSet.getTimestamp("create_date").toInstant().atZone(ZoneId.systemDefault()));
+        message.setDate(resultSet.getTimestamp("create_date").toInstant().atZone(ZoneId.of("Europe/Moscow")));
         message.setAuthor(resultSet.getString("author"));
         message.setAuthorName(resultSet.getString("author_name"));
         message.setFileId(resultSet.getString("file_id"));
