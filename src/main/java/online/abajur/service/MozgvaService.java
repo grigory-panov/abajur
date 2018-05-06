@@ -1,5 +1,7 @@
 package online.abajur.service;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import online.abajur.AppException;
 import online.abajur.DownloadPageException;
 import online.abajur.ParsePageException;
@@ -91,7 +93,8 @@ public class MozgvaService {
 
             Element chart = document.selectFirst(".chartMobil");
             if(chart != null) {
-                data.setChartScript(chart.selectFirst("script").html().replace("options: {", "options: {onClick: showGameResults, "));
+                String newScript = changeChartScript(chart.selectFirst("script").html());
+                data.setChartScript(newScript);
             }
 
             Element chartLinks = document.selectFirst(".result_links.hiddenDesc");
@@ -115,6 +118,46 @@ public class MozgvaService {
             throw new DownloadPageException("Cannot load page from mozgva.com", ex);
         }catch (NullPointerException ex){
             throw new ParsePageException("Cannot parse page from mozgva.com, check page structure, source was changed", ex);
+        }
+    }
+
+    public static String changeChartScript(String script) throws ParsePageException {
+
+        try {
+            StringBuilder sb = new StringBuilder(script);
+            int start = sb.indexOf("new Chart(ctx,") + "new Chart(ctx,".length();
+            int end = sb.indexOf("); }; if (typeof Chart");
+            if(start == -1 || end == -1 ) {
+                return script;
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+            Map o = objectMapper.readValue(sb.substring(start, end), LinkedHashMap.class);
+            List<Map> datasets = (List) ((Map) o.get("data")).get("datasets");
+
+            Map team = datasets.stream().filter(t -> t.get("type").equals("line") && t.get("yAxisID").equals("scores")).findFirst().orElse(new LinkedHashMap());
+            team.put("borderColor",  "rgba(0, 123, 255, 1)");
+            List<Integer> teamPoints = (List<Integer>) team.get("data");
+            Map max = datasets.stream().filter(t -> t.get("type").equals("line") && t.get("label").equals("Максимум")).findFirst().orElse(new LinkedHashMap());
+            List<Integer> maxPoints = (List<Integer>) max.get("data");
+
+            Map perc = datasets.stream().filter(t -> t.get("type").equals("bar") && t.get("yAxisID").equals("percents")).findFirst().orElse(new LinkedHashMap());
+            perc.put("backgroundColor",  "rgba(0, 123, 255, 0.5)");
+
+            List<Integer> diff = new ArrayList<>();
+            for (int i = 0; i < maxPoints.size(); i++) {
+                diff.add(teamPoints.get(i) - maxPoints.get(i));
+            }
+
+            ((Map) ((Map) o.get("options")).get("scales")).remove("xAxes");
+            ((Map) o.get("options")).put("onClick", "showGameResults");
+
+            ((Map) o.get("data")).put("labels", diff);
+
+            return sb.replace(start, end, objectMapper.writeValueAsString(o)).toString().replaceAll("\"showGameResults\"", "showGameResults");
+        }catch (IOException ex){
+            throw new ParsePageException("cannot parse chart script");
         }
     }
 

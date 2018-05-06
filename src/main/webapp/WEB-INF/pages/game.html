@@ -51,7 +51,7 @@
                 <tbody>
                 <tr th:each="row: ${data}">
                     <th scope="row" th:text="${row.place}">1</th>
-                    <td th:text="${row.teamName}">Абажур</td>
+                    <td><a href="/" th:href="@{/?teamId={id}(id=${row.teamId})}" th:text="${row.teamName}">Абажур</a></td>
                     <td th:text="${row.tour1}">6</td>
                     <td th:text="${row.tour2}">5</td>
                     <td th:text="${row.tour3}">4</td>
