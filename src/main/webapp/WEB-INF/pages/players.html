@@ -7,7 +7,7 @@
     <meta name="author" content="">
     <link rel="icon" th:href="@{/resources/img/favicon.ico}" href="../../resources/img/favicon.ico">
 
-    <title>Результаты игры</title>
+    <title>Участники игры</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -36,23 +36,12 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col"></th>
-                    <th scope="col">Команда</th>
-                    <th scope="col">1</th>
-                    <th scope="col">2</th>
-                    <th scope="col">3</th>
-                    <th scope="col">4</th>
-                    <th scope="col">5</th>
-                    <th scope="col">6</th>
-                    <th scope="col">7</th>
-                    <th scope="col">Всего</th>
+                    <th scope="col"><span th:text="${data.size()}">35</span> команд зарегистрировано</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="row: ${data}">
-                    <th scope="row" th:text="${row.place}">1</th>
-                    <td class="text-rigth">
+                <tr th:each="row: ${data}" class="d-flex">
+                    <td class="col-3 text-right">
                         <span class="badge" th:if="${row.badgeCount > 0}" th:classappend="${row.badgeClass}">
                             <img th:src="@{/resources/img/{badge}.png(badge=${row.badgeClass == 'badge-light' || row.badgeClass == 'badge-warning' ? 'award' : 'award-white'})}" src="../../resources/img/avard-white.png">
                             <span th:if="${row.badgeCount > 1}">
@@ -61,15 +50,7 @@
                             </span>
                         </span>
                     </td>
-                    <td class="text-left"><a href="/" th:href="@{/?teamId={id}(id=${row.teamId})}" th:text="${row.teamName}">Абажур</a></td>
-                    <td th:text="${row.tour1}">6</td>
-                    <td th:text="${row.tour2}">5</td>
-                    <td th:text="${row.tour3}">4</td>
-                    <td th:text="${row.tour4}">9</td>
-                    <td th:text="${row.tour5}">5</td>
-                    <td th:text="${row.tour6}">5</td>
-                    <td th:text="${row.tour7}">12</td>
-                    <td th:text="${row.total}">46</td>
+                    <td class="col-9 text-left"><a href="/" th:href="@{/?teamId={id}(id=${row.teamId})}" th:text="${row.teamName}">Абажур</a></td>
                 </tr>
                 </tbody>
             </table>
@@ -79,7 +60,7 @@
     <footer class="mt-auto">
         <div class="inner">
             <div class="inner">
-                <form th:action="@{/game/{gameId}(gameId=${gameId})}" method="post">
+                <form th:action="@{/players/{gameId}(gameId=${gameId})}" method="post">
                     <p>Последнее обновление <span th:text="${lastUpdate}">12.11.2018 12:33:22</span></p>
                     <button class="btn btn-primary">Обновить</button>
                 </form>

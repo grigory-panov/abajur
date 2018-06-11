@@ -18,8 +18,26 @@ public class GameStatistic {
     private int total;
     private int place;
 
+    private String badgeClass;
+    private int badgeCount;
+
     private ZonedDateTime updateDate;
 
+    public String getBadgeClass() {
+        return badgeClass;
+    }
+
+    public void setBadgeClass(String badgeClass) {
+        this.badgeClass = badgeClass;
+    }
+
+    public int getBadgeCount() {
+        return badgeCount;
+    }
+
+    public void setBadgeCount(int badgeCount) {
+        this.badgeCount = badgeCount;
+    }
 
     public ZonedDateTime getUpdateDate() {
         return updateDate;
@@ -140,6 +158,9 @@ public class GameStatistic {
                 ", tour7=" + tour7 +
                 ", total=" + total +
                 ", place=" + place +
+                ", badgeClass='" + badgeClass + '\'' +
+                ", badgeCount=" + badgeCount +
+                ", updateDate=" + updateDate +
                 '}';
     }
 

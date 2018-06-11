@@ -8,9 +8,12 @@ import online.abajur.domain.TeamStatistic;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class HomeTest {
@@ -45,7 +48,7 @@ public class HomeTest {
             game.setTime(el.selectFirst("ul.ad").child(2).text());
             nextGames.add(game);
         }
-        nextGames.sort(Comparator.comparingInt(NextGame::getId));
+        nextGames.sort(Comparator.comparing(NextGame::getActualDate));
         for(NextGame ng : nextGames){
             System.out.println(ng);
         }
@@ -66,6 +69,11 @@ public class HomeTest {
         }
     }
 
+    @Test
+    public void testParse() {
+        String date = "21 апреля " + LocalDate.now().getYear();
+        System.out.println(LocalDate.parse(date, DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("ru"))));
+    }
 
     @Test
     public void testChart() throws IOException {
@@ -98,6 +106,21 @@ public class HomeTest {
         ((Map)o.get("data")).put("labels", diff);
 
         System.out.println(o);
+
+    }
+
+    @Test
+    public void testCalendar() throws Exception{
+        Document calendar = Jsoup.parse(HomeTest.class.getResourceAsStream("/calendar.html"), "UTF-8", "http://mozgva.com/");
+        Elements games = calendar.select(".itemGame-new div.game-content");
+        if(games != null){
+            for(int i = 0; i< games.size(); i++) {
+                System.out.println("name = " + games.get(i).selectFirst("div.name").text() +
+                        ", id=" + games.get(i).selectFirst("div.bottom div.list_wrap a").attr("data-game-id") +
+                        ", players = " + games.get(i).selectFirst("div.bottom div.list_wrap div.list_count").text()
+                );
+            }
+        }
 
     }
 }

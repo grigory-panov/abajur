@@ -1,10 +1,32 @@
 package online.abajur.domain;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 public class NextGame {
     private int id;
     private String location;
     private String date;
     private String time;
+    private String name;
+    private int players;
+
+    public int getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(int players) {
+        this.players = players;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public int getId() {
         return id;
@@ -45,6 +67,12 @@ public class NextGame {
                 ", location='" + location + '\'' +
                 ", date='" + date + '\'' +
                 ", time='" + time + '\'' +
+                ", name='" + name + '\'' +
+                ", players=" + players +
                 '}';
+    }
+
+    public LocalDate getActualDate(){
+        return LocalDate.parse(getDate() + " " + LocalDate.now().getYear(), DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("ru")));
     }
 }

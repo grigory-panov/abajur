@@ -52,7 +52,12 @@ public class MozgvaService {
                 logger.info(el.selectFirst("p.name").text() + " " + el.selectFirst(".avatar").attr("style"));
                 User user = new User();
                 user.setName(el.selectFirst("p.name").text());
-                user.setImage(el.selectFirst(".avatar").attr("style").replace("background-image: url('", "").replace("')", ""));
+                String url = el.selectFirst(".avatar").attr("style").replace("background-image: url('", "").replace("')", "");
+                if(url.startsWith("/")){
+                    user.setImage("https://mozgva.com" + url);
+                }else{
+                    user.setImage("https://mozgva.com/" + url);
+                }
                 team.add(user);
             }
             data.setTeam(team);
@@ -85,7 +90,24 @@ public class MozgvaService {
                     nextGames.add(game);
                 }
             }
-            nextGames.sort(Comparator.comparingInt(NextGame::getId));
+            nextGames.sort(Comparator.comparing(NextGame::getActualDate));
+
+            if(nextGames.size() > 0){
+                Document calendar = Jsoup.connect("http://mozgva.com/calendar?city_id=1").get();
+                Elements games = calendar.select(".itemGame-new div.game-content");
+                if(games != null){
+                    for(int i = 0; i< games.size(); i++) {
+                        int gameId = Integer.parseInt(games.get(i).selectFirst("div.bottom div.list_wrap a").attr("data-game-id"));
+                        for(NextGame nextGame : nextGames){
+                            if(nextGame.getId() == gameId){
+                                nextGame.setName(games.get(i).selectFirst("div.name").text());
+                                nextGame.setPlayers(Integer.parseInt(games.get(i).selectFirst("div.bottom div.list_wrap div.list_count").text()));
+                            }
+                        }
+                    }
+                }
+
+            }
             for (NextGame ng : nextGames) {
                 logger.info(ng.toString());
             }
@@ -161,6 +183,19 @@ public class MozgvaService {
         }
     }
 
+    public static String getBageClassByMozgvaClass(String mozgvaName){
+        switch(mozgvaName){
+            case "green": return "badge-success";
+            case "blue": return "badge-info";
+            case "bronze": return "badge-orange";
+            case "silver": return "badge-light";
+            case "gold": return "badge-warning";
+            case "multicolored": return "badge-warning";
+            default:
+                return "badge-success";
+        }
+    }
+
     private String getBageClassByPercent(String percent) {
         try {
             double p = Double.parseDouble(percent.replace("%", ""));
@@ -233,6 +268,14 @@ public class MozgvaService {
                     teamResult.setTotal(NumberUtils.toInt(td.get(8).text()));
                     teamResult.setPlace(NumberUtils.toInt(td.get(9).text()));
                     teamResult.setUpdateDate(ZonedDateTime.now(ZoneId.of("Europe/Moscow")));
+                    Element teamBadge = td.get(0).selectFirst("div.wreath").selectFirst("img");
+                    if(teamBadge != null){
+                        String[] parts = teamBadge.attr("src").replace("/assets/wreaths/", "").split("-");
+                        if(parts[0].endsWith("wreath")){
+                            teamResult.setBadgeCount(Integer.parseInt(parts[1]));
+                            teamResult.setBadgeClass(MozgvaService.getBageClassByMozgvaClass(parts[2]));
+                        }
+                    }
                     logger.info(teamResult.toString());
                     results.put(teamResult.getTeamId(), teamResult);
                 }
@@ -247,6 +290,44 @@ public class MozgvaService {
         }
     }
 
+    @Cacheable(cacheNames = "players")
+    public Collection<Player> getGamePlayers(Integer gameId) throws AppException{
+        try {
+            Document document = Jsoup.connect("http://mozgva.com/teams/list?game_id=" + gameId).get();
+            logger.info("title {}", document.title());
+            List<Player> ret = new ArrayList<>();
+            Element ul = document.selectFirst(".teams_list ul");
+            Elements rows = ul.select("li");
+            for (int i = 0; i< rows.size(); i++) { // li
+                Player player = new Player();
+                Element a = rows.get(i).selectFirst("div.team_name a");
+                if(a!= null) {
+                    player.setTeamId(Integer.parseInt(a.attr("href").replace("/teams/", "")));
+                    player.setTeamName(a.text());
+                }
+                Element img = rows.get(i).selectFirst("div.venki img");
+                if(img != null){
+                    String[] parts = img.attr("src").replace("/assets/wreaths/", "").split("-");
+                    if(parts[0].endsWith("wreath")){
+                        player.setBadgeCount(Integer.parseInt(parts[1]));
+                        player.setBadgeClass(getBageClassByMozgvaClass(parts[2]));
+                    }
+                   // wreath-4-gold-f0049625af050149b4b94f8ecacf6a8b17fb595a8cf78123f35c93016a3a62b0.png
+                }
+                player.setLastUpdateDate(ZonedDateTime.now());
+                logger.info(player.toString());
+                if(player.getTeamName() != null) {
+                    ret.add(player);
+                }
+            }
+            return ret;
+        }catch (IOException ex){
+            throw new DownloadPageException("Cannot load page from mozgva.com", ex);
+        }catch (NullPointerException ex){
+            throw new ParsePageException("Cannot parse page " + "http://mozgva.com/teams/list?game_id=" + gameId  +" from mozgva.com, check page structure, source was changed", ex);
+        }
+    }
+
     public void clearCache() {
         cacheManager.getCache("landing").clear();
     }
@@ -254,5 +335,10 @@ public class MozgvaService {
     public void clearGamesCache() {
         cacheManager.getCache("games").clear();
     }
+
+    public void clearPlayersCache() {
+        cacheManager.getCache("players").clear();
+    }
+
 
 }

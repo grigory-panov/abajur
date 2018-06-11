@@ -25,6 +25,7 @@ public class CacheConfig extends CachingConfigurerSupport {
         caches.add(new ConcurrentMapCache("landing"));
         caches.add(new ConcurrentMapCache("statistic"));
         caches.add(new ConcurrentMapCache("games"));
+        caches.add(new ConcurrentMapCache("players"));
         simpleCacheManager.setCaches(caches);
         return simpleCacheManager;
     }

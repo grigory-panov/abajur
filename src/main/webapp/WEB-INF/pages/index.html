@@ -74,11 +74,13 @@
 
         <p class="lead">Следующие игры:</p>
         <div class="row">
-            <div class="col-sm" th:each="next : ${data.nextGames}">
-                <p>
+            <div class="col-xm" th:each="next : ${data.nextGames}">
                 <span th:text="${next.date + ' ' + next.time + ', '}">12 января 11:00</span>
                 <span th:text="${next.location}">Some place</span>
-                </p>
+                <span th:text="${next.name}">Зачетная мозгва 123 день 2</span>,
+                <a th:href="@{/players/{gameId}(gameId=${next.id})}">
+                    <span th:text="${next.players}">35</span><span> команд</span>
+                </a>
             </div>
         </div>
     </main>
@@ -97,7 +99,7 @@
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script th:src="@{resources/js/chart.min.js}" src="../../resources/js/chart.min.js"></script>
+<script th:src="@{/resources/js/chart.min.js}" src="../../resources/js/chart.min.js"></script>
 
 <script th:inline="javascript">
 /*<![CDATA[*/

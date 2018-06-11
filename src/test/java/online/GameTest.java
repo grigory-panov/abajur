@@ -1,6 +1,7 @@
 package online;
 
 import online.abajur.domain.GameStatistic;
+import online.abajur.service.MozgvaService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -41,6 +42,14 @@ public class GameTest {
                 teamResult.setTotal(Integer.parseInt(td.get(8).text()));
                 teamResult.setPlace(Integer.parseInt(td.get(9).text()));
 
+                Element teamBadge = td.get(0).selectFirst("div.wreath").selectFirst("img");
+                if(teamBadge != null){
+                    String[] parts = teamBadge.attr("src").replace("/assets/wreaths/", "").split("-");
+                    if(parts[0].endsWith("wreath")){
+                        teamResult.setBadgeCount(Integer.parseInt(parts[1]));
+                        teamResult.setBadgeClass(MozgvaService.getBageClassByMozgvaClass(parts[2]));
+                    }
+                }
                 System.out.println(teamResult);
                 results.put(teamResult.getTeamId(), teamResult);
                 Assert.assertNotNull(teamResult.getTeamName());
