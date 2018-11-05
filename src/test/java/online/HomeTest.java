@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -44,11 +45,13 @@ public class HomeTest {
             NextGame game = new NextGame();
             game.setId(Integer.parseInt(el.selectFirst("a").attr("data-game-id")));
             game.setLocation(el.selectFirst("a.location").text());
-            game.setDate(el.selectFirst("ul.ad").child(1).text());
-            game.setTime(el.selectFirst("ul.ad").child(2).text());
+            String date = el.selectFirst("ul.ad").child(1).text();
+            String time = el.selectFirst("ul.ad").child(2).text();
+            LocalDateTime localDate = LocalDateTime.parse(date + " " + LocalDate.now().getYear() + " " + time, DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm", Locale.forLanguageTag("ru")));
+            game.setDate(localDate);
             nextGames.add(game);
         }
-        nextGames.sort(Comparator.comparing(NextGame::getActualDate));
+        nextGames.sort(Comparator.comparing(NextGame::getDate));
         for(NextGame ng : nextGames){
             System.out.println(ng);
         }
