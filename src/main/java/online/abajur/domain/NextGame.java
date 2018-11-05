@@ -73,6 +73,6 @@ public class NextGame {
     }
 
     public LocalDate getActualDate(){
-        return LocalDate.parse(getDate() + " " + LocalDate.now().getYear(), DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("ru")));
+        return LocalDate.parse(getDate() + " " + LocalDate.now().getYear(), DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.forLanguageTag("ru")));
     }
 }
