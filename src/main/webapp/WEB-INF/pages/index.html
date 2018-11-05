@@ -75,11 +75,11 @@
         <p class="lead">Следующие игры:</p>
         <div class="row">
             <div class="col-xm" th:each="next : ${data.nextGames}">
-                <span th:text="${next.date + ' ' + next.time + ', '}">12 января 11:00</span>
+                <span th:text="${next.formattedDate +', '}">Четверг, 12 января 11:00</span>
                 <span th:text="${next.location}">Some place</span>
                 <span th:text="${next.name}">Зачетная мозгва 123 день 2</span>,
                 <a th:href="@{/players/{gameId}(gameId=${next.id})}">
-                    <span th:text="${next.players}">35</span><span> команд</span>
+                    <span th:if="${next.players > 0}" th:text="${next.players}">35</span> <span th:if="${next.players == 0}">< 10</span><span> команд</span>
                 </a>
             </div>
         </div>

@@ -1,14 +1,13 @@
 package online.abajur.domain;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class NextGame {
     private int id;
     private String location;
-    private String date;
-    private String time;
+    private LocalDateTime date;
     private String name;
     private int players;
 
@@ -44,20 +43,16 @@ public class NextGame {
         this.location = location;
     }
 
-    public String getDate() {
+    public String getFormattedDate() {
+        return date.format(DateTimeFormatter.ofPattern("EEE, dd MMMM, HH:mm ", Locale.forLanguageTag("ru")));
+    }
+
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     @Override
@@ -65,14 +60,9 @@ public class NextGame {
         return "NextGame{" +
                 "id=" + id +
                 ", location='" + location + '\'' +
-                ", date='" + date + '\'' +
-                ", time='" + time + '\'' +
+                ", date='" + getFormattedDate() + '\'' +
                 ", name='" + name + '\'' +
                 ", players=" + players +
                 '}';
-    }
-
-    public LocalDate getActualDate(){
-        return LocalDate.parse(getDate() + " " + LocalDate.now().getYear(), DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.forLanguageTag("ru")));
     }
 }

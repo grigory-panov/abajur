@@ -20,6 +20,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -85,12 +87,15 @@ public class MozgvaService {
                     NextGame game = new NextGame();
                     game.setId(Integer.parseInt(el.selectFirst("a").attr("data-game-id")));
                     game.setLocation(el.selectFirst("a.location").text());
-                    game.setDate(el.selectFirst("ul.ad").child(1).text());
-                    game.setTime(el.selectFirst("ul.ad").child(2).text());
+                    String date = el.selectFirst("ul.ad").child(1).text();
+                    String time = el.selectFirst("ul.ad").child(2).text();
+                    LocalDateTime localDate = LocalDateTime.parse(date + " " + LocalDate.now().getYear() + " " + time, DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm", Locale.forLanguageTag("ru")));
+                    game.setDate(localDate);
+
                     nextGames.add(game);
                 }
             }
-            nextGames.sort(Comparator.comparing(NextGame::getActualDate));
+            nextGames.sort(Comparator.comparing(NextGame::getDate));
 
             if(nextGames.size() > 0){
                 Document calendar = Jsoup.connect("http://mozgva.com/calendar?city_id=1").get();
@@ -101,7 +106,10 @@ public class MozgvaService {
                         for(NextGame nextGame : nextGames){
                             if(nextGame.getId() == gameId){
                                 nextGame.setName(games.get(i).selectFirst("div.name").text());
-                                nextGame.setPlayers(Integer.parseInt(games.get(i).selectFirst("div.bottom-content div.list_wrap div.list_count").text()));
+                                Element count = games.get(i).selectFirst("div.bottom-content div.list_wrap div.list_count");
+                                if(count != null && StringUtils.isNumeric(count.text())) {
+                                    nextGame.setPlayers(Integer.parseInt(count.text()));
+                                }
                             }
                         }
                     }
