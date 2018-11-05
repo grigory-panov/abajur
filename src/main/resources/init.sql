@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS abajur_user(
     name VARCHAR(200)
 );
 
+
 CREATE TABLE IF NOT EXISTS chat_message(
     id BIGINT PRIMARY KEY,
     text VARCHAR(4000),

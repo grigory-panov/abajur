@@ -97,11 +97,11 @@ public class MozgvaService {
                 Elements games = calendar.select(".itemGame-new div.game-content");
                 if(games != null){
                     for(int i = 0; i< games.size(); i++) {
-                        int gameId = Integer.parseInt(games.get(i).selectFirst("div.bottom div.list_wrap a").attr("data-game-id"));
+                        int gameId = Integer.parseInt(games.get(i).selectFirst("div.bottom-content div.list_wrap a").attr("data-game-id"));
                         for(NextGame nextGame : nextGames){
                             if(nextGame.getId() == gameId){
                                 nextGame.setName(games.get(i).selectFirst("div.name").text());
-                                nextGame.setPlayers(Integer.parseInt(games.get(i).selectFirst("div.bottom div.list_wrap div.list_count").text()));
+                                nextGame.setPlayers(Integer.parseInt(games.get(i).selectFirst("div.bottom-content div.list_wrap div.list_count").text()));
                             }
                         }
                     }

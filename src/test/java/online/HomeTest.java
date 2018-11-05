@@ -116,8 +116,8 @@ public class HomeTest {
         if(games != null){
             for(int i = 0; i< games.size(); i++) {
                 System.out.println("name = " + games.get(i).selectFirst("div.name").text() +
-                        ", id=" + games.get(i).selectFirst("div.bottom div.list_wrap a").attr("data-game-id") +
-                        ", players = " + games.get(i).selectFirst("div.bottom div.list_wrap div.list_count").text()
+                        ", id=" + games.get(i).selectFirst("div.bottom-content div.list_wrap a").attr("data-game-id") +
+                        ", players = " + games.get(i).selectFirst("div.bottom-content div.list_wrap div.list_count").text()
                 );
             }
         }
