@@ -296,7 +296,7 @@ public class MozgvaService {
         }catch (IOException ex){
             throw new DownloadPageException("Cannot load page from mozgva.com", ex);
         }catch (NullPointerException ex){
-            throw new ParsePageException("Cannot parse page " + "http://mozgva.com/games/" + gameId + "/result" +"from mozgva.com, check page structure, source was changed", ex);
+            throw new ParsePageException("Cannot parse page " + "http://mozgva.com/games/" + gameId + "/result" +" from mozgva.com, check page structure, source was changed", ex);
         }
     }
 

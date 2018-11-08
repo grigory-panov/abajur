@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -150,5 +151,20 @@ public class StatisticRepository {
             game.setTotal(resultSet.getInt("total"));
             return game;
         }, teamId);
+    }
+
+    public List<NextGame> getGamesWithoutStatistic() {
+        try {
+            return template.query("select * from game g where g.game_time < ? and not exists (select 1 from game_statistic gs where gs.game_id = g.game_id)", (resultSet, i) -> {
+                NextGame game = new NextGame();
+                game.setId(resultSet.getInt("game_id"));
+                game.setDate(resultSet.getTimestamp("game_time").toInstant().atZone(ZoneId.of("Europe/Moscow")));
+                game.setName(resultSet.getString("game_name"));
+                game.setLocation(resultSet.getString("game_location"));
+                return game;
+            }, Instant.now().atZone(ZoneId.of("Europe/Moscow")).plusHours(3).format(DateTimeFormatter.ISO_INSTANT));
+        }catch (EmptyResultDataAccessException ex){
+            return null;
+        }
     }
 }

@@ -66,4 +66,9 @@ public class StatisticService {
     public List<HistoryGame> getHistoryGames(int teamId) {
         return statisticRepository.getHistoryGames(teamId);
     }
+
+    @Transactional
+    public List<NextGame> getGamesWithoutStatistic() {
+        return statisticRepository.getGamesWithoutStatistic();
+    }
 }
