@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -89,9 +88,10 @@ public class MozgvaService {
                     game.setLocation(el.selectFirst("a.location").text());
                     String date = el.selectFirst("ul.ad").child(1).text();
                     String time = el.selectFirst("ul.ad").child(2).text();
-                    LocalDateTime localDate = LocalDateTime.parse(date + " " + LocalDate.now().getYear() + " " + time, DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm", Locale.forLanguageTag("ru")));
+                    ZonedDateTime localDate = ZonedDateTime.parse(date + " " + LocalDate.now().getYear() + " " + time,
+                            DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm", Locale.forLanguageTag("ru")).withZone(ZoneId.of("Europe/Moscow")));
                     game.setDate(localDate);
-
+                    statisticService.saveGame(game);
                     nextGames.add(game);
                 }
             }
@@ -141,6 +141,8 @@ public class MozgvaService {
                 logger.info(ng.toString());
             }
             data.setPrevGames(prevGames);
+
+            data.setHistoryGames(statisticService.getHistoryGames(teamId));
             data.setLastUpdate(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss ZZZ").format(ZonedDateTime.now().toInstant().atZone(ZoneId.of("Europe/Moscow"))));
             return data;
 
@@ -181,11 +183,11 @@ public class MozgvaService {
             }
 
             ((Map) ((Map) o.get("options")).get("scales")).remove("xAxes");
-            ((Map) o.get("options")).put("onClick", "showGameResults");
+            ((Map) o.get("options")).put("onClick", "");
 
             ((Map) o.get("data")).put("labels", diff);
 
-            return sb.replace(start, end, objectMapper.writeValueAsString(o)).toString().replaceAll("\"showGameResults\"", "showGameResults");
+            return sb.replace(start, end, objectMapper.writeValueAsString(o)).toString();//.replaceAll("\"showGameResults\"", "");
         }catch (IOException ex){
             throw new ParsePageException("cannot parse chart script");
         }

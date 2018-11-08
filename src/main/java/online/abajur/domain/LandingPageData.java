@@ -8,6 +8,7 @@ public class LandingPageData {
     private List<PrevGame> prevGames;
     private List<TeamStatistic> positions;
     private List<User> team;
+    private List<HistoryGame> historyGames;
     private String title;
     private String chartScript;
     private String lastUpdate;
@@ -93,5 +94,13 @@ public class LandingPageData {
 
     public void setChartScript(String chartScript) {
         this.chartScript = chartScript;
+    }
+
+    public List<HistoryGame> getHistoryGames() {
+        return historyGames;
+    }
+
+    public void setHistoryGames(List<HistoryGame> historyGames) {
+        this.historyGames = historyGames;
     }
 }

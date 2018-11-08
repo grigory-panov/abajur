@@ -1,6 +1,8 @@
 package online.abajur.service;
 
 import online.abajur.domain.GameStatistic;
+import online.abajur.domain.HistoryGame;
+import online.abajur.domain.NextGame;
 import online.abajur.domain.TeamStatistic;
 import online.abajur.repository.StatisticRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,16 @@ public class StatisticService {
         }
     }
 
-    public ZonedDateTime getLastUpdateDate(Integer gameId) {
-        return null;
+    @Transactional
+    public void saveGame(NextGame game){
+        if(statisticRepository.getGame(game.getId()) == null) {
+            statisticRepository.saveGame(game);
+        }
+    }
+
+
+    @Transactional
+    public List<HistoryGame> getHistoryGames(int teamId) {
+        return statisticRepository.getHistoryGames(teamId);
     }
 }

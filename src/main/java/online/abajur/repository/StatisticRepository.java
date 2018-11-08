@@ -1,6 +1,8 @@
 package online.abajur.repository;
 
 import online.abajur.domain.GameStatistic;
+import online.abajur.domain.HistoryGame;
+import online.abajur.domain.NextGame;
 import online.abajur.domain.TeamStatistic;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -110,5 +112,43 @@ public class StatisticRepository {
                 stat.getTotal(),
                 stat.getUpdateDate().toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_INSTANT)
         );
+    }
+
+    public NextGame getGame(int id) {
+        try {
+            return template.queryForObject("select * from game where game_id = ?", (resultSet, i) -> {
+                NextGame game = new NextGame();
+                game.setId(resultSet.getInt("game_id"));
+                game.setDate(resultSet.getTimestamp("game_time").toInstant().atZone(ZoneId.of("Europe/Moscow")));
+                game.setName(resultSet.getString("game_name"));
+                game.setLocation(resultSet.getString("game_location"));
+                return game;
+            }, id);
+        }catch (EmptyResultDataAccessException ex){
+            return null;
+        }
+    }
+
+    public void saveGame(NextGame game) {
+        template.update("insert into game (game_id, game_name, game_location, game_time) values (?,?,?,?)",
+                game.getId(),
+                game.getLocation(),
+                game.getName(),
+                game.getDate().toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_INSTANT));
+    }
+
+    public List<HistoryGame> getHistoryGames(int teamId) {
+        return template.query("select g.*, gs.total, gs.place, (select count (*) from game_statistic s where s.game_id = g.game_id) as players from game g " +
+                "inner join game_statistic gs on g.game_id = gs.game_id where team_id = ? order by game_time desc limit 10", (resultSet, i) -> {
+            HistoryGame game = new HistoryGame();
+            game.setId(resultSet.getInt("game_id"));
+            game.setDate(resultSet.getTimestamp("game_time").toInstant().atZone(ZoneId.of("Europe/Moscow")));
+            game.setName(resultSet.getString("game_name"));
+            game.setLocation(resultSet.getString("game_location"));
+            game.setPlace(resultSet.getInt("place"));
+            game.setPlayers(resultSet.getInt("players"));
+            game.setTotal(resultSet.getInt("total"));
+            return game;
+        }, teamId);
     }
 }

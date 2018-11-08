@@ -72,3 +72,12 @@ CREATE TABLE IF NOT EXISTS game_statistic(
 CREATE PRIMARY KEY IF NOT EXISTS PK_GAME_STATISTIC ON game_statistic(game_id, team_id);
 CREATE PRIMARY KEY IF NOT EXISTS PK_TEAM_STATISTIC ON team_statistic(team_id, games);
 CREATE UNIQUE INDEX IF NOT EXISTS IDX_CM_FILE_ID ON chat_message(file_id);
+
+CREATE TABLE IF NOT EXISTS game(
+    game_id INT not null,
+    game_name varchar(200) default null,
+    game_location varchar(100) default null,
+    game_time timestamp default null
+);
+
+CREATE PRIMARY KEY IF NOT EXISTS PK_GAME ON game(game_id);

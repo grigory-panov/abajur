@@ -4,12 +4,30 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class NextGame {
+public class HistoryGame {
     private int id;
     private String location;
     private ZonedDateTime date;
     private String name;
     private int players;
+    private int place;
+    private int total;
+
+    public int getPlace() {
+        return place;
+    }
+
+    public void setPlace(int place) {
+        this.place = place;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
 
     public int getPlayers() {
         return players;

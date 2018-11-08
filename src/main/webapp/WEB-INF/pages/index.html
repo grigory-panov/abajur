@@ -82,6 +82,33 @@
                     <span th:if="${next.players > 0}" th:text="${next.players}">35</span> <span th:if="${next.players == 0}">< 10</span><span> команд</span>
                 </a>
             </div>
+            <div class="col-xm" th:if="${data.nextGames.size() == 0}">
+                Нет заявок на игры
+            </div>
+        </div>
+        <p class="lead" th:if="${data.historyGames.size() > 0}">Прошлые игры:</p>
+
+        <div class="row" th:if="${data.historyGames.size() > 0}">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">Игра</th>
+                    <th class="text-center">Место</th>
+                    <th class="text-center">Результат</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="history: ${data.historyGames}">
+                    <td>
+                        <a th:href="@{/game/{gameId}(gameId=${history.id})}" th:text="${history.name}">
+                            123 день 2
+                        </a>
+                    </td>
+                    <td th:text="${history.location}">Фактория Гриль</td>
+                    <td th:text="${history.place + '/' + history.players + ', ' + history.total}">1/35, 43</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </main>
 
@@ -101,17 +128,6 @@
 <!-- Placed at the end of the document so the pages load faster -->
 <script th:src="@{/resources/js/chart.min.js}" src="../../resources/js/chart.min.js"></script>
 
-<script th:inline="javascript">
-/*<![CDATA[*/
-
-    function showGameResults(ev, params){
-        if(typeof params !== "undefined" && params.length > 0){
-            var GAMES = [[${data.prevGames}]];
-            window.location = [[@{/game/}]] + GAMES[params[0]._index].id;
-        }
-    }
-/*]]>*/
-</script>
 <script th:inline="javascript" th:utext="${data.chartScript}">
     //<![CDATA[
 (function() { var initChart = function() { var ctx = document.getElementById("chart-1"); var chart = new Chart(ctx, { type: "bar", data: {"labels":["111_2","112_2","113_2","114_1","114_3f","115_1","116_2","117_3 f","118_2","119_3f"],"datasets":[{"type":"line","label":"Абажур","yAxisID":"scores","data":[24,26,26,22,35,35,36,39,34,31],"borderColor":"rgba(255, 0, 1, 1)","backgroundColor":"transparent"},{"type":"line","label":"Максимум","data":[33,34,40,45,43,44,41,39,43,40],"borderColor":"rgba(255, 255, 255, 0.7)","backgroundColor":"transparent"},{"label":"Абажур (%)","yAxisID":"percents","type":"bar","data":[72.73,76.47,65.0,48.89,81.4,79.55,87.8,100.0,79.07,77.5],"backgroundColor":["rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.2)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)","rgba(255, 0, 1, 0.5)"]}]}, options: { onClick: showGameResults, "responsive":true,"maintainAspectRatio":false,"scales":{"yAxes":[{"id":"scores","ticks":{"suggestedMin":0,"suggestedMax":50,"fontColor":"rgba(255, 255, 255, 0.7)"}},{"id":"percents","position":"right","ticks":{"suggestedMin":0,"suggestedMax":100,"fontColor":"rgba(255, 255, 255, 0.7)"}}],"xAxes":[{"ticks":{"fontColor":"rgba(255, 255, 255, 0)"}}]}} }); }; if (typeof Chart !== "undefined" && Chart !== null) { initChart(); } else { /* W3C standard */ if (window.addEventListener) { window.addEventListener("load", initChart, false); } /* IE */ else if (window.attachEvent) { window.attachEvent("onload", initChart); } } })();
