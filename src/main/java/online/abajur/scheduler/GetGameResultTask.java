@@ -28,7 +28,11 @@ public class GetGameResultTask {
     @Scheduled(fixedDelay = 3600000)
     public void run(){
         logger.debug("run GetGameResultTask...");
+
         List<NextGame> games = statisticService.getGamesWithoutStatistic();
+        if(!games.isEmpty()){
+            mozgvaService.clearGamesCache();
+        }
         for(NextGame game : games){
             logger.debug("get info about game " + game.getId());
             try {
