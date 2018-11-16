@@ -133,8 +133,8 @@ public class StatisticRepository {
     public void saveGame(NextGame game) {
         template.update("insert into game (game_id, game_name, game_location, game_time) values (?,?,?,?)",
                 game.getId(),
-                game.getLocation(),
                 game.getName(),
+                game.getLocation(),
                 game.getDate().toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_INSTANT));
     }
 
