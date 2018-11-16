@@ -90,8 +90,7 @@ public class MozgvaService {
                     String time = el.selectFirst("ul.ad").child(2).text();
                     ZonedDateTime localDate = ZonedDateTime.parse(date + " " + LocalDate.now().getYear() + " " + time,
                             DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm", Locale.forLanguageTag("ru")).withZone(ZoneId.of("Europe/Moscow")));
-                    game.setDate(localDate);
-                    statisticService.saveGame(game);
+                    game.setDate(localDate);                    
                     nextGames.add(game);
                 }
             }
@@ -110,6 +109,7 @@ public class MozgvaService {
                                 if(count != null && StringUtils.isNumeric(count.text())) {
                                     nextGame.setPlayers(Integer.parseInt(count.text()));
                                 }
+                                statisticService.saveGame(nextGame);
                             }
                         }
                     }
