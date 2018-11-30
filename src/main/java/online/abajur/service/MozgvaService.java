@@ -41,7 +41,7 @@ public class MozgvaService {
     public LandingPageData getLandingPageData(int teamId) throws AppException {
         LandingPageData data = new LandingPageData();
         try {
-            Document document = Jsoup.connect("http://mozgva.com/teams/" + teamId).get();
+            Document document = Jsoup.connect("http://mozgva.com/teams/" + teamId).timeout(60000).get();
             logger.info(document.title());
             data.setTitle(document.title());
             data.setName(document.title().replace(" - Это Мозгва, детка!", ""));
@@ -97,7 +97,7 @@ public class MozgvaService {
             nextGames.sort(Comparator.comparing(NextGame::getDate));
 
             if(nextGames.size() > 0){
-                Document calendar = Jsoup.connect("http://mozgva.com/calendar?city_id=1").get();
+                Document calendar = Jsoup.connect("http://mozgva.com/calendar?city_id=1").timeout(60000).get();
                 Elements games = calendar.select(".itemGame-new div.game-content");
                 if(games != null){
                     for(int i = 0; i< games.size(); i++) {
@@ -253,7 +253,7 @@ public class MozgvaService {
     @Cacheable(cacheNames = "games")
     public Collection<GameStatistic> getGameStatistic(int gameId) throws AppException {
         try {
-            Document document = Jsoup.connect("http://mozgva.com/games/" + gameId + "/result").get();
+            Document document = Jsoup.connect("http://mozgva.com/games/" + gameId + "/result").timeout(60000).get();
             logger.info("title {}", document.title());
             Map<Integer, GameStatistic> results = new LinkedHashMap<>();
             Elements resultPages = document.select(".games_result");
@@ -294,7 +294,7 @@ public class MozgvaService {
             statisticService.saveGameStatistic(results, gameId);
             return ret;
         }catch (IOException ex){
-            throw new DownloadPageException("Cannot load page from mozgva.com", ex);
+            throw new DownloadPageException("Cannot load page from mozgva.com/games/result", ex);
         }catch (NullPointerException ex){
             throw new ParsePageException("Cannot parse page " + "http://mozgva.com/games/" + gameId + "/result" +" from mozgva.com, check page structure, source was changed", ex);
         }
@@ -303,7 +303,7 @@ public class MozgvaService {
     @Cacheable(cacheNames = "players")
     public Collection<Player> getGamePlayers(Integer gameId) throws AppException{
         try {
-            Document document = Jsoup.connect("http://mozgva.com/teams/list?game_id=" + gameId).get();
+            Document document = Jsoup.connect("http://mozgva.com/teams/list?game_id=" + gameId).timeout(60000).get();
             logger.info("title {}", document.title());
             List<Player> ret = new ArrayList<>();
             Element ul = document.selectFirst(".teams_list ul");
@@ -332,7 +332,7 @@ public class MozgvaService {
             }
             return ret;
         }catch (IOException ex){
-            throw new DownloadPageException("Cannot load page from mozgva.com", ex);
+            throw new DownloadPageException("Cannot load page from mozgva.com/teams/list", ex);
         }catch (NullPointerException ex){
             throw new ParsePageException("Cannot parse page " + "http://mozgva.com/teams/list?game_id=" + gameId  +" from mozgva.com, check page structure, source was changed", ex);
         }
